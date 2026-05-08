@@ -2,6 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer utilities {
+  .premium-shadow {
+    box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.04);
+  }
+  .dark .premium-shadow {
+    box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.4);
+  }
+}
+
 @layer base {
   body {
     background-color: #f6fbf2;

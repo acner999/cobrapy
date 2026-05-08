@@ -2,6 +2,8 @@
 
 API + Dashboard de cobros instantáneos para Paraguay sobre el SIP del BCP.
 
+> **Cómo probar localmente** (usuarios precargados, bot de WhatsApp paso a paso, túnel con Cloudflare): ver [TESTING.md](TESTING.md).
+
 ## Estado
 
 Funcional para desarrollo local. Sin conexión real al SIP todavía (se simula).

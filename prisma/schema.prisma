@@ -26,8 +26,94 @@ model Merchant {
   charges       Charge[]
   webhooks      WebhookEndpoint[]
   bankAccounts  BankAccount[]
+  paymentLinks  PaymentLink[]
+  memberships   Membership[]
 
   @@map("merchants")
+}
+
+// =====================================================
+// USERS - personas humanas que se loguean al dashboard
+// =====================================================
+model User {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  passwordHash  String   @map("password_hash")
+  name          String
+  emailVerified DateTime? @map("email_verified")
+  lastLoginAt   DateTime? @map("last_login_at")
+  active        Boolean  @default(true)
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  memberships   Membership[]
+
+  @@map("users")
+}
+
+// =====================================================
+// MEMBERSHIPS - relación many-to-many entre User y Merchant con rol
+// =====================================================
+model Membership {
+  id          String         @id @default(cuid())
+  userId      String         @map("user_id")
+  merchantId  String         @map("merchant_id")
+  role        MembershipRole
+  invitedBy   String?        @map("invited_by")
+  acceptedAt  DateTime?      @map("accepted_at")
+  createdAt   DateTime       @default(now()) @map("created_at")
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  merchant    Merchant @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, merchantId])
+  @@index([merchantId])
+  @@index([userId])
+  @@map("memberships")
+}
+
+enum MembershipRole {
+  OWNER
+  ADMIN
+  OPERATOR
+  READONLY
+}
+
+// =====================================================
+// WHATSAPP - vínculo entre número de teléfono y comercio
+// =====================================================
+model WhatsAppAccount {
+  id          String    @id @default(cuid())
+  phone       String    @unique
+  merchantId  String    @map("merchant_id")
+  userId      String?   @map("user_id")
+  active      Boolean   @default(true)
+  verifiedAt  DateTime? @map("verified_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  @@index([merchantId])
+  @@map("whatsapp_accounts")
+}
+
+model WhatsAppMessage {
+  id          String      @id @default(cuid())
+  direction   WaDirection
+  fromPhone   String      @map("from_phone")
+  toPhone     String?     @map("to_phone")
+  body        String      @db.Text
+  intent      String?
+  chargeId    String?     @map("charge_id")
+  merchantId  String?     @map("merchant_id")
+  createdAt   DateTime    @default(now()) @map("created_at")
+
+  @@index([fromPhone, createdAt])
+  @@index([merchantId])
+  @@map("whatsapp_messages")
+}
+
+enum WaDirection {
+  INBOUND
+  OUTBOUND
 }
 
 enum KycStatus {
@@ -70,26 +156,67 @@ enum Environment {
 }
 
 // =====================================================
+// BANKS - bancos disponibles en Paraguay
+// =====================================================
+model Bank {
+  code        String   @id // ej: "BMP", "BCI"
+  name        String
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  bankAccounts BankAccount[]
+
+  @@map("banks")
+}
+
+// =====================================================
 // BANK ACCOUNTS - cuentas destino donde se acreditan los pagos
 // =====================================================
 model BankAccount {
-  id            String   @id @default(cuid())
-  merchantId    String   @map("merchant_id")
-  bankCode      String   @map("bank_code")    // código BCP del banco
-  accountNumber String   @map("account_number")
-  accountAlias  String?  @map("account_alias") // alias SIP (cel/email/RUC)
-  isDefault     Boolean  @default(false) @map("is_default")
-  createdAt     DateTime @default(now()) @map("created_at")
+  id              String   @id @default(cuid())
+  merchantId      String   @map("merchant_id")
+  bankCode        String   @map("bank_code")
+  accountNumber   String   @map("account_number")
+  accountAlias    String?  @map("account_alias")
+  isDefault       Boolean  @default(false) @map("is_default")
+  documentType    String?  @map("document_type")    // RUC, CEDULA, PASAPORTE
+  document        String?  @map("document")         // número de documento
+  nameOrBusinessName String? @map("name_or_business_name")
+  createdAt       DateTime @default(now()) @map("created_at")
 
-  merchant      Merchant @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+  merchant        Merchant @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+  bank            Bank     @relation(fields: [bankCode], references: [code])
 
   @@index([merchantId])
   @@map("bank_accounts")
 }
 
 // =====================================================
-// CHARGES - intentos de cobro (request del comercio)
-// =====================================================
+ // PAYMENT LINKS - links compartibles para cobrar por WhatsApp, redes, etc.
+ // =====================================================
+ model PaymentLink {
+   id            String   @id @default(cuid())
+   merchantId    String   @map("merchant_id")
+   slug          String   @unique // la parte visible del URL, ej: "pago/juan-estancia"
+   title         String?  // título opcional para identificar el link
+   amountGs      BigInt?  @map("amount_gs") // null = el cliente elige monto
+   description   String?
+   expiresAt     DateTime? @map("expires_at")
+   maxUses       Int?     @map("max_uses") // null = ilimitado
+   usesCount     Int      @default(0) @map("uses_count")
+   active        Boolean  @default(true)
+   createdAt     DateTime @default(now()) @map("created_at")
+
+   merchant      Merchant @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+
+   @@index([merchantId])
+   @@index([slug])
+   @@map("payment_links")
+ }
+
+ // =====================================================
+ // CHARGES - intentos de cobro (request del comercio)
+ // =====================================================
 model Charge {
   id              String   @id @default(cuid())
   merchantId      String   @map("merchant_id")

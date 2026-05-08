@@ -7,6 +7,8 @@ import { AdminMerchantsController } from './merchants/admin-merchants.controller
 import { AdminMerchantsService } from './merchants/admin-merchants.service';
 import { AdminStatsController } from './stats/admin-stats.controller';
 import { AdminStatsService } from './stats/admin-stats.service';
+import { AdminBanksController } from './banks/admin-banks.controller';
+import { AdminBanksService } from './banks/admin-banks.service';
 
 @Module({
   imports: [
@@ -15,7 +17,7 @@ import { AdminStatsService } from './stats/admin-stats.service';
       signOptions: { expiresIn: '12h' },
     }),
   ],
-  controllers: [AdminAuthController, AdminMerchantsController, AdminStatsController],
-  providers: [AdminAuthService, AdminGuard, AdminMerchantsService, AdminStatsService],
+  controllers: [AdminAuthController, AdminMerchantsController, AdminStatsController, AdminBanksController],
+  providers: [AdminAuthService, AdminGuard, AdminMerchantsService, AdminStatsService, AdminBanksService],
 })
 export class AdminPortalModule {}

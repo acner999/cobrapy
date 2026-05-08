@@ -4,7 +4,8 @@ import { useRouter, usePathname } from 'next/navigation';
 import { useEffect, useState, ReactNode } from 'react';
 import { Icon } from './icon';
 import { DarkModeToggle } from './dark-mode-toggle';
-import { clearApiKey, getApiKey } from '@/lib/api';
+import { MerchantSwitcher } from './merchant-switcher';
+import { clearUserSession, getUserToken } from '@/lib/api';
 
 interface AppShellProps {
   breadcrumb?: { section: string; current?: string };
@@ -14,28 +15,50 @@ interface AppShellProps {
 const navItems = [
   { href: '/dashboard', label: 'Home', icon: 'dashboard' },
   { href: '/charges', label: 'Cobros', icon: 'payments' },
+  { href: '/payment-links', label: 'Links de Pago', icon: 'link' },
   { href: '/webhooks', label: 'Webhooks', icon: 'webhook' },
   { href: '/api-keys', label: 'API Keys', icon: 'vpn_key' },
+  { href: '/bank-accounts', label: 'Cuentas Bancarias', icon: 'account_balance' },
   { href: '/settings', label: 'Configuración', icon: 'settings' },
+  { href: '/settings/team', label: 'Equipo', icon: 'group' },
+];
+
+const adminNavItems = [
+  { href: '/admin/banks', label: 'Admin Bancos', icon: 'admin_panel_settings' },
   { href: 'http://localhost:3000/docs', label: 'Docs', icon: 'description', external: true },
 ];
+
+async function validateAdminToken(): Promise<boolean> {
+  const token = localStorage.getItem('cobrapy_admin_token');
+  if (!token) return false;
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/admin-portal/auth/me`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return res.ok;
+  } catch {
+    return false;
+  }
+}
 
 export function AppShell({ breadcrumb, children }: AppShellProps) {
   const router = useRouter();
   const pathname = usePathname();
   const [authed, setAuthed] = useState<boolean | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
-    const has = !!getApiKey();
+    const has = !!getUserToken();
     setAuthed(has);
-    if (!has) router.replace('/');
+    if (!has) router.replace('/login');
+    validateAdminToken().then(setIsAdmin);
   }, [router]);
 
   if (authed !== true) return null;
 
   function logout() {
-    clearApiKey();
-    router.push('/');
+    clearUserSession();
+    router.push('/login');
   }
 
   function isActive(href: string) {
@@ -69,6 +92,28 @@ export function AppShell({ breadcrumb, children }: AppShellProps) {
               <Link key={item.href} href={item.href} className={cls}>{inner}</Link>
             );
           })}
+          {isAdmin && (
+            <div className="pt-md mt-md border-t border-outline-variant">
+              <div className="text-[10px] uppercase tracking-widest text-on-surface-variant px-md mb-xs font-bold">Admin</div>
+              {adminNavItems.map((item) => {
+                const active = !item.external && isActive(item.href);
+                const cls = active
+                  ? 'flex items-center gap-md px-md py-sm rounded-lg text-primary font-bold border-r-4 border-primary bg-surface-container transition-colors font-body-sm text-body-sm tracking-wide'
+                  : 'flex items-center gap-md px-md py-sm rounded-lg text-on-surface-variant hover:text-primary hover:bg-surface-container transition-colors font-body-sm text-body-sm tracking-wide';
+                const inner = (
+                  <>
+                    <Icon name={item.icon} filled={active} />
+                    <span>{item.label}</span>
+                  </>
+                );
+                return item.external ? (
+                  <a key={item.href} href={item.href} target="_blank" rel="noopener noreferrer" className={cls}>{inner}</a>
+                ) : (
+                  <Link key={item.href} href={item.href} className={cls}>{inner}</Link>
+                );
+              })}
+            </div>
+          )}
         </nav>
         <div className="px-md mt-auto pt-md border-t border-outline-variant">
           <Link href="/charges/new"
@@ -100,6 +145,7 @@ export function AppShell({ breadcrumb, children }: AppShellProps) {
             <span className="text-xs font-bold tracking-widest bg-tertiary-fixed text-on-tertiary-fixed-variant px-sm py-unit rounded">
               Environment: TEST
             </span>
+            <MerchantSwitcher />
             <DarkModeToggle />
             <div className="flex items-center gap-md border-l border-outline-variant pl-lg">
               <button onClick={logout} className="text-on-surface-variant hover:text-primary text-body-sm font-medium" aria-label="Salir">

@@ -37,12 +37,19 @@ async function bootstrap() {
       { type: 'http', scheme: 'bearer', bearerFormat: 'JWT', description: 'JWT del staff de CobraPy (POST /admin-portal/auth/login)' },
       'admin-jwt',
     )
+    .addBearerAuth(
+      { type: 'http', scheme: 'bearer', bearerFormat: 'JWT', description: 'JWT de usuario del dashboard (POST /auth/login)' },
+      'user-jwt',
+    )
     .addTag('health', 'Health checks')
     .addTag('merchants', 'Onboarding y gestión de comercios')
     .addTag('charges', 'Cobros y QR EMVCo')
     .addTag('webhooks', 'Endpoints de notificación')
     .addTag('admin', 'Endpoints internos para desarrollo')
     .addTag('admin-portal', 'Portal del equipo CobraPy (KYC, métricas, comercios)')
+    .addTag('auth', 'Registro y login de usuarios del dashboard')
+    .addTag('teams', 'Gestión de miembros del comercio')
+    .addTag('whatsapp', 'Bot de WhatsApp para cobros vía mensaje')
     .build();
   const document = SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup('docs', app, document, {
