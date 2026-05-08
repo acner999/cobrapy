@@ -230,6 +230,29 @@ enum DeliveryStatus {
 }
 
 // =====================================================
+// ADMINS - usuarios internos del equipo CobraPy
+// =====================================================
+model Admin {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  passwordHash  String    @map("password_hash")
+  name          String
+  role          AdminRole @default(STAFF)
+  active        Boolean   @default(true)
+  lastLoginAt   DateTime? @map("last_login_at")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  @@map("admins")
+}
+
+enum AdminRole {
+  SUPERADMIN
+  STAFF
+  READONLY
+}
+
+// =====================================================
 // AUDIT LOG - todo cambio sensible queda registrado
 // =====================================================
 model AuditLog {

@@ -8,6 +8,7 @@ import { MerchantsModule } from './merchants/merchants.module';
 import { ChargesModule } from './charges/charges.module';
 import { WebhooksModule } from './webhooks/webhooks.module';
 import { AdminModule } from './admin/admin.module';
+import { AdminPortalModule } from './admin-portal/admin-portal.module';
 import { HealthController } from './health.controller';
 import { RequestIdMiddleware } from './common/request-id.middleware';
 
@@ -22,6 +23,7 @@ import { RequestIdMiddleware } from './common/request-id.middleware';
     ChargesModule,
     WebhooksModule,
     AdminModule,
+    AdminPortalModule,
   ],
   controllers: [HealthController],
 })

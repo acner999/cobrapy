@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import { useEffect, useState, ReactNode } from 'react';
 import { Icon } from './icon';
+import { DarkModeToggle } from './dark-mode-toggle';
 import { clearApiKey, getApiKey } from '@/lib/api';
 
 interface AppShellProps {
@@ -99,6 +100,7 @@ export function AppShell({ breadcrumb, children }: AppShellProps) {
             <span className="text-xs font-bold tracking-widest bg-tertiary-fixed text-on-tertiary-fixed-variant px-sm py-unit rounded">
               Environment: TEST
             </span>
+            <DarkModeToggle />
             <div className="flex items-center gap-md border-l border-outline-variant pl-lg">
               <button onClick={logout} className="text-on-surface-variant hover:text-primary text-body-sm font-medium" aria-label="Salir">
                 Salir

@@ -33,11 +33,16 @@ async function bootstrap() {
       'api-key',
     )
     .addApiKey({ type: 'apiKey', name: 'X-Admin-Token', in: 'header' }, 'admin-token')
+    .addBearerAuth(
+      { type: 'http', scheme: 'bearer', bearerFormat: 'JWT', description: 'JWT del staff de CobraPy (POST /admin-portal/auth/login)' },
+      'admin-jwt',
+    )
     .addTag('health', 'Health checks')
     .addTag('merchants', 'Onboarding y gestión de comercios')
     .addTag('charges', 'Cobros y QR EMVCo')
     .addTag('webhooks', 'Endpoints de notificación')
     .addTag('admin', 'Endpoints internos para desarrollo')
+    .addTag('admin-portal', 'Portal del equipo CobraPy (KYC, métricas, comercios)')
     .build();
   const document = SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup('docs', app, document, {
