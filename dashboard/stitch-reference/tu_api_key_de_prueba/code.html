@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-bright": "#f6fbf2",
+                        "surface-container-high": "#e4eae1",
+                        "on-surface-variant": "#3f4a3f",
+                        "inverse-surface": "#2c322c",
+                        "on-secondary-fixed-variant": "#005236",
+                        "error-container": "#ffdad6",
+                        "surface-container-highest": "#dfe4db",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-variant": "#dfe4db",
+                        "on-primary-container": "#bcffc3",
+                        "inverse-on-surface": "#edf2e9",
+                        "surface-container-low": "#f0f5ec",
+                        "on-tertiary-container": "#ffeaec",
+                        "on-background": "#171d17",
+                        "tertiary-container": "#b3485f",
+                        "surface-dim": "#d6dcd3",
+                        "outline": "#6f7a6e",
+                        "on-primary-fixed": "#00210a",
+                        "inverse-primary": "#78db8c",
+                        "tertiary-fixed": "#ffd9dd",
+                        "on-tertiary-fixed": "#400014",
+                        "surface-container": "#eaf0e6",
+                        "on-tertiary-fixed-variant": "#82223b",
+                        "primary": "#00622b",
+                        "on-error": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "on-primary": "#ffffff",
+                        "on-primary-fixed-variant": "#005323",
+                        "secondary": "#006c49",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-fixed-dim": "#ffb2bd",
+                        "surface-tint": "#006d31",
+                        "error": "#ba1a1a",
+                        "tertiary": "#943048",
+                        "primary-container": "#0a7d3a",
+                        "primary-fixed-dim": "#78db8c",
+                        "surface": "#f6fbf2",
+                        "on-surface": "#171d17",
+                        "outline-variant": "#becabc",
+                        "background": "#f6fbf2",
+                        "secondary-container": "#6cf8bb",
+                        "primary-fixed": "#94f8a6",
+                        "secondary-fixed": "#6ffbbe",
+                        "on-secondary": "#ffffff",
+                        "on-secondary-container": "#00714d",
+                        "on-secondary-fixed": "#002113",
+                        "secondary-fixed-dim": "#4edea3"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "sm": "8px",
+                        "lg": "24px",
+                        "unit": "4px",
+                        "md": "16px",
+                        "xs": "4px",
+                        "xl": "32px",
+                        "margin": "24px",
+                        "gutter": "20px"
+                    },
+                    "fontFamily": {
+                        "body-base": ["Inter"],
+                        "h1": ["Inter"],
+                        "api-snippet": ["JetBrains Mono"],
+                        "h3": ["Inter"],
+                        "h2": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "data-mono": ["JetBrains Mono"]
+                    },
+                    "fontSize": {
+                        "body-base": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "h1": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                        "api-snippet": ["13px", {"lineHeight": "1.7", "fontWeight": "400"}],
+                        "h3": ["20px", {"lineHeight": "1.4", "fontWeight": "600"}],
+                        "h2": ["24px", {"lineHeight": "1.3", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "body-sm": ["14px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                        "data-mono": ["14px", {"lineHeight": "1.4", "fontWeight": "500"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen flex flex-col items-center justify-center">
+<!-- Onboarding Container -->
+<main class="w-full max-w-2xl px-margin flex flex-col gap-xl py-xl">
+<!-- Header Section -->
+<header class="text-center space-y-sm">
+<div class="flex justify-center mb-md">
+<div class="p-md rounded-xl bg-primary-container/10 border border-primary/20">
+<span class="material-symbols-outlined text-primary text-[48px]" data-icon="vpn_key">vpn_key</span>
+</div>
+</div>
+<h1 class="font-h1 text-h1 text-on-surface">Configura tu acceso</h1>
+<p class="font-body-base text-body-base text-on-surface-variant max-w-md mx-auto">
+                Para comenzar a integrar CobraPy en tu plataforma, necesitás tu llave de acceso privada.
+            </p>
+</header>
+<!-- API Key Block -->
+<section class="bg-surface-container-lowest border border-outline-variant rounded-xl shadow-sm overflow-hidden">
+<div class="p-lg">
+<div class="flex items-center justify-between mb-sm">
+<span class="font-body-sm text-body-sm font-medium text-on-surface-variant">Tu API Key (Test Mode)</span>
+<span class="px-sm py-1 bg-secondary-container text-on-secondary-container text-[11px] font-bold uppercase tracking-wider rounded">Secreta</span>
+</div>
+<!-- Key Container -->
+<div class="flex flex-col md:flex-row items-center gap-md bg-inverse-surface rounded-lg p-lg border border-outline">
+<code class="flex-1 font-api-snippet text-api-snippet text-primary-fixed break-all tracking-wider">
+                        ck_test_51MzZ2uHkXy9wQvB4R2p0L7mN8vX3qW1zS9aJ6oH4fD5gK8lM0nB2vC4xZ
+                    </code>
+<button class="flex items-center gap-sm bg-surface-variant/20 hover:bg-surface-variant/40 text-primary-fixed-dim px-md py-sm rounded-lg transition-colors border border-primary-fixed-dim/20 font-body-sm text-body-sm group">
+<span class="material-symbols-outlined text-md group-active:scale-90 transition-transform" data-icon="content_copy">content_copy</span>
+                        Copiar
+                    </button>
+</div>
+</div>
+<!-- Security Warning -->
+<div class="px-lg py-md bg-error-container/10 border-t border-outline-variant flex gap-md items-start">
+<span class="material-symbols-outlined text-error" data-icon="warning">warning</span>
+<div class="space-y-unit">
+<p class="font-body-sm text-body-sm font-semibold text-on-surface">Aviso importante:</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+                        Guardá tu API key en un lugar seguro. Por seguridad, <span class="font-bold">no se volverá a mostrar completa</span> una vez que salgas de esta pantalla.
+                    </p>
+</div>
+</div>
+</section>
+<!-- Onboarding Progress/Illustration Area -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-lg">
+<div class="p-lg bg-surface-container rounded-xl border border-outline-variant flex items-center gap-md">
+<div class="w-12 h-12 rounded-full bg-surface-bright flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary" data-icon="description">description</span>
+</div>
+<div>
+<h3 class="font-body-sm text-body-sm font-bold">Documentación</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Guía de integración técnica.</p>
+</div>
+</div>
+<div class="p-lg bg-surface-container rounded-xl border border-outline-variant flex items-center gap-md">
+<div class="w-12 h-12 rounded-full bg-surface-bright flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary" data-icon="webhook">webhook</span>
+</div>
+<div>
+<h3 class="font-body-sm text-body-sm font-bold">Webhooks</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Notificaciones en tiempo real.</p>
+</div>
+</div>
+</div>
+<!-- Action Section -->
+<footer class="flex flex-col gap-md pt-md">
+<button class="w-full bg-primary text-on-primary py-lg rounded-xl font-h3 text-h3 hover:bg-primary-container transition-all shadow-md active:scale-[0.98] flex items-center justify-center gap-md">
+                Continuar al Dashboard
+                <span class="material-symbols-outlined" data-icon="arrow_forward">arrow_forward</span>
+</button>
+<p class="text-center font-body-sm text-body-sm text-on-surface-variant">
+                ¿Necesitás ayuda? <a class="text-primary font-semibold hover:underline" href="#">Contactar a soporte</a>
+</p>
+</footer>
+</main>
+<!-- Footer Component Branding -->
+<footer class="w-full py-xl mt-auto bg-surface-container-highest dark:bg-inverse-surface border-t border-outline-variant">
+<div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center px-lg gap-md">
+<div class="font-h3 text-h3 font-bold text-primary">CobraPy</div>
+<div class="flex gap-lg">
+<a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-all" href="#">Términos</a>
+<a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-all" href="#">Privacidad</a>
+<a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-all" href="#">Documentación</a>
+<a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-all" href="#">Soporte</a>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">© 2024 CobraPy. Infraestructura Fintech para Paraguay.</p>
+</div>
+</footer>
+</body></html>

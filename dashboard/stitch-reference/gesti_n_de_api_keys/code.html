@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+
+<html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CobraPy - API Keys Management</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-bright": "#f6fbf2",
+                    "surface-container-high": "#e4eae1",
+                    "on-surface-variant": "#3f4a3f",
+                    "inverse-surface": "#2c322c",
+                    "on-secondary-fixed-variant": "#005236",
+                    "error-container": "#ffdad6",
+                    "surface-container-highest": "#dfe4db",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-variant": "#dfe4db",
+                    "on-primary-container": "#bcffc3",
+                    "inverse-on-surface": "#edf2e9",
+                    "surface-container-low": "#f0f5ec",
+                    "on-tertiary-container": "#ffeaec",
+                    "on-background": "#171d17",
+                    "tertiary-container": "#b3485f",
+                    "surface-dim": "#d6dcd3",
+                    "outline": "#6f7a6e",
+                    "on-primary-fixed": "#00210a",
+                    "inverse-primary": "#78db8c",
+                    "tertiary-fixed": "#ffd9dd",
+                    "on-tertiary-fixed": "#400014",
+                    "surface-container": "#eaf0e6",
+                    "on-tertiary-fixed-variant": "#82223b",
+                    "primary": "#00622b",
+                    "on-error": "#ffffff",
+                    "on-error-container": "#93000a",
+                    "on-primary": "#ffffff",
+                    "on-primary-fixed-variant": "#005323",
+                    "secondary": "#006c49",
+                    "on-tertiary": "#ffffff",
+                    "tertiary-fixed-dim": "#ffb2bd",
+                    "surface-tint": "#006d31",
+                    "error": "#ba1a1a",
+                    "tertiary": "#943048",
+                    "primary-container": "#0a7d3a",
+                    "primary-fixed-dim": "#78db8c",
+                    "surface": "#f6fbf2",
+                    "on-surface": "#171d17",
+                    "outline-variant": "#becabc",
+                    "background": "#f6fbf2",
+                    "secondary-container": "#6cf8bb",
+                    "primary-fixed": "#94f8a6",
+                    "secondary-fixed": "#6ffbbe",
+                    "on-secondary": "#ffffff",
+                    "on-secondary-container": "#00714d",
+                    "on-secondary-fixed": "#002113",
+                    "secondary-fixed-dim": "#4edea3"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "sm": "8px",
+                    "lg": "24px",
+                    "unit": "4px",
+                    "md": "16px",
+                    "xs": "4px",
+                    "xl": "32px",
+                    "margin": "24px",
+                    "gutter": "20px"
+            },
+            "fontFamily": {
+                    "body-base": ["Inter"],
+                    "h1": ["Inter"],
+                    "api-snippet": ["JetBrains Mono"],
+                    "h3": ["Inter"],
+                    "h2": ["Inter"],
+                    "body-sm": ["Inter"],
+                    "data-mono": ["JetBrains Mono"]
+            },
+            "fontSize": {
+                    "body-base": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "h1": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                    "api-snippet": ["13px", {"lineHeight": "1.7", "fontWeight": "400"}],
+                    "h3": ["20px", {"lineHeight": "1.4", "fontWeight": "600"}],
+                    "h2": ["24px", {"lineHeight": "1.3", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "body-sm": ["14px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                    "data-mono": ["14px", {"lineHeight": "1.4", "fontWeight": "500"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-base">
+<div class="flex min-h-screen">
+<!-- SideNavBar Component -->
+<aside class="hidden lg:flex fixed left-0 top-0 h-full py-md bg-surface-container-lowest border-r border-outline-variant shadow-sm w-64 flex-col z-50">
+<div class="px-lg mb-xl">
+<span class="font-h2 text-h2 font-bold text-primary">CobraPy</span>
+<p class="font-body-sm text-body-sm tracking-wide text-on-surface-variant">Infraestructura Fintech</p>
+</div>
+<nav class="flex-grow">
+<ul class="space-y-1">
+<li>
+<a class="flex items-center px-lg py-md text-on-surface-variant hover:bg-surface-container transition-colors font-body-sm text-body-sm tracking-wide" href="#">
+<span class="material-symbols-outlined mr-md" data-icon="dashboard">dashboard</span>
+                            Home
+                        </a>
+</li>
+<li>
+<a class="flex items-center px-lg py-md text-on-surface-variant hover:bg-surface-container transition-colors font-body-sm text-body-sm tracking-wide" href="#">
+<span class="material-symbols-outlined mr-md" data-icon="payments">payments</span>
+                            Cobros
+                        </a>
+</li>
+<li>
+<a class="flex items-center px-lg py-md text-on-surface-variant hover:bg-surface-container transition-colors font-body-sm text-body-sm tracking-wide" href="#">
+<span class="material-symbols-outlined mr-md" data-icon="webhook">webhook</span>
+                            Webhooks
+                        </a>
+</li>
+<li>
+<a class="flex items-center px-lg py-md text-primary font-bold border-r-4 border-primary bg-surface-container-low transition-colors font-body-sm text-body-sm tracking-wide" href="#">
+<span class="material-symbols-outlined mr-md" data-icon="vpn_key" style="font-variation-settings: 'FILL' 1;">vpn_key</span>
+                            API Keys
+                        </a>
+</li>
+<li>
+<a class="flex items-center px-lg py-md text-on-surface-variant hover:bg-surface-container transition-colors font-body-sm text-body-sm tracking-wide" href="#">
+<span class="material-symbols-outlined mr-md" data-icon="settings">settings</span>
+                            Configuración
+                        </a>
+</li>
+<li>
+<a class="flex items-center px-lg py-md text-on-surface-variant hover:bg-surface-container transition-colors font-body-sm text-body-sm tracking-wide" href="#">
+<span class="material-symbols-outlined mr-md" data-icon="description">description</span>
+                            Docs
+                        </a>
+</li>
+</ul>
+</nav>
+<div class="px-lg mt-auto">
+<button class="w-full bg-primary-container text-white py-md rounded-lg font-bold hover:bg-opacity-90 transition-all flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-sm" data-icon="add">add</span>
+                    Nuevo Cobro
+                </button>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-grow lg:ml-64 min-h-screen">
+<!-- TopNavBar Component -->
+<header class="w-full h-16 flex justify-between items-center px-lg sticky top-0 z-40 bg-surface-bright border-b border-outline-variant">
+<div class="flex items-center gap-md lg:hidden">
+<span class="font-h3 text-h3 font-bold text-primary">CobraPy</span>
+</div>
+<div class="hidden lg:block">
+<h1 class="font-h3 text-h3 text-on-surface">API Keys Management</h1>
+</div>
+<div class="flex items-center gap-lg">
+<span class="px-md py-1 rounded-full bg-surface-container-high text-on-surface-variant font-body-sm text-body-sm font-medium">Environment: TEST</span>
+<div class="flex items-center gap-md">
+<button class="p-2 text-on-surface-variant hover:text-primary transition-colors active:scale-95">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<div class="w-8 h-8 rounded-full overflow-hidden bg-outline-variant">
+<img alt="User Profile" class="w-full h-full object-cover" data-alt="A professional headshot of a developer in a modern, brightly lit office environment. The lighting is soft and natural, emphasizing a high-end corporate tech atmosphere. The individual is smiling slightly, dressed in clean, minimalist attire, fitting the Verde Guaraní color palette of the platform's brand identity." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDMhOp3Rnb-e6tsF_j_SZh4b3bFoCZQlO2PdVPTIh3NuknK0c3Jje-7h0dqyMd7qTpV20bAwxVnQccRcOxRZNcnTEKnukIfLTUKSWgu7DhdwMt_cYY4dTdDQONRs10QMgWWchY1kZUkqTjXbArX3LtFULLZ2svohCkjhTWiEfa11M2nCQhiEUMHwPQyq3-ln1LvtQQi-4hPClibyfu7GUa9bNXSNs_iK0WQ6p1PoA9KqOwR18GilwUzrSU1aaprXnimxbG_tHlz6g"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Page Canvas -->
+<div class="p-lg lg:p-xl max-w-7xl mx-auto space-y-xl">
+<!-- Header Actions Section -->
+<section class="flex flex-col md:flex-row justify-between items-start md:items-center gap-md">
+<div class="space-y-1">
+<h2 class="font-h2 text-h2 text-on-surface">Mis API Keys</h2>
+<p class="font-body-base text-body-base text-on-surface-variant">Gestiona el acceso programático a la infraestructura de CobraPy.</p>
+</div>
+<button class="bg-primary text-white px-lg py-md rounded-lg font-bold hover:bg-opacity-90 flex items-center gap-md shadow-sm transition-all">
+<span class="material-symbols-outlined" data-icon="add_key">key</span>
+                        Generar Nueva Key
+                    </button>
+</section>
+<!-- Data Table Section -->
+<section class="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden shadow-sm">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low border-b border-outline-variant">
+<th class="px-lg py-md font-body-sm text-body-sm uppercase tracking-widest text-on-surface-variant font-semibold">Nombre</th>
+<th class="px-lg py-md font-body-sm text-body-sm uppercase tracking-widest text-on-surface-variant font-semibold">Prefijo</th>
+<th class="px-lg py-md font-body-sm text-body-sm uppercase tracking-widest text-on-surface-variant font-semibold text-center">Entorno</th>
+<th class="px-lg py-md font-body-sm text-body-sm uppercase tracking-widest text-on-surface-variant font-semibold">Último Uso</th>
+<th class="px-lg py-md font-body-sm text-body-sm uppercase tracking-widest text-on-surface-variant font-semibold text-right">Acciones</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant">
+<tr class="hover:bg-surface-container transition-colors">
+<td class="px-lg py-md">
+<div class="flex flex-col">
+<span class="font-medium text-on-surface">E-commerce Integration</span>
+<span class="text-xs text-on-surface-variant">Creada el 12 Oct, 2023</span>
+</div>
+</td>
+<td class="px-lg py-md font-data-mono text-data-mono text-on-surface-variant">ck_test_8f2a...</td>
+<td class="px-lg py-md text-center">
+<span class="inline-flex items-center px-sm py-1 rounded bg-secondary-container text-on-secondary-container text-xs font-bold uppercase tracking-tighter">TEST</span>
+</td>
+<td class="px-lg py-md font-data-mono text-data-mono text-on-surface-variant">Hace 2 minutos</td>
+<td class="px-lg py-md text-right">
+<button class="text-error font-bold text-sm hover:underline flex items-center gap-1 ml-auto">
+<span class="material-symbols-outlined text-sm" data-icon="block">block</span>
+                                            Revocar
+                                        </button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container transition-colors">
+<td class="px-lg py-md">
+<div class="flex flex-col">
+<span class="font-medium text-on-surface">Production Web App</span>
+<span class="text-xs text-on-surface-variant">Creada el 01 Sep, 2023</span>
+</div>
+</td>
+<td class="px-lg py-md font-data-mono text-data-mono text-on-surface-variant">ck_live_4d91...</td>
+<td class="px-lg py-md text-center">
+<span class="inline-flex items-center px-sm py-1 rounded bg-inverse-primary text-on-primary-fixed-variant text-xs font-bold uppercase tracking-tighter">LIVE</span>
+</td>
+<td class="px-lg py-md font-data-mono text-data-mono text-on-surface-variant">Hace 4 horas</td>
+<td class="px-lg py-md text-right">
+<button class="text-error font-bold text-sm hover:underline flex items-center gap-1 ml-auto">
+<span class="material-symbols-outlined text-sm" data-icon="block">block</span>
+                                            Revocar
+                                        </button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container transition-colors">
+<td class="px-lg py-md">
+<div class="flex flex-col">
+<span class="font-medium text-on-surface">Internal Analytics</span>
+<span class="text-xs text-on-surface-variant">Creada el 15 Ago, 2023</span>
+</div>
+</td>
+<td class="px-lg py-md font-data-mono text-data-mono text-on-surface-variant">ck_test_12a7...</td>
+<td class="px-lg py-md text-center">
+<span class="inline-flex items-center px-sm py-1 rounded bg-secondary-container text-on-secondary-container text-xs font-bold uppercase tracking-tighter">TEST</span>
+</td>
+<td class="px-lg py-md font-data-mono text-data-mono text-on-surface-variant">Nunca</td>
+<td class="px-lg py-md text-right">
+<button class="text-error font-bold text-sm hover:underline flex items-center gap-1 ml-auto">
+<span class="material-symbols-outlined text-sm" data-icon="block">block</span>
+                                            Revocar
+                                        </button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<!-- Documentation Callout (Bento pattern) -->
+<section class="grid grid-cols-1 md:grid-cols-3 gap-lg">
+<div class="md:col-span-2 p-xl bg-primary text-white rounded-xl shadow-md flex items-center gap-xl">
+<div class="space-y-md">
+<h3 class="font-h3 text-h3">Seguridad ante todo</h3>
+<p class="font-body-base text-body-base opacity-90">Nunca compartas tus API Keys privadas en repositorios públicos. Utiliza variables de entorno para proteger tu infraestructura.</p>
+<a class="inline-flex items-center gap-2 font-bold hover:underline" href="#">
+                                Guía de mejores prácticas
+                                <span class="material-symbols-outlined" data-icon="arrow_forward">arrow_forward</span>
+</a>
+</div>
+<div class="hidden lg:block">
+<span class="material-symbols-outlined text-[80px] opacity-20" data-icon="security">security</span>
+</div>
+</div>
+<div class="p-xl bg-surface-container-high rounded-xl border border-outline-variant flex flex-col justify-center items-center text-center space-y-md">
+<span class="material-symbols-outlined text-primary text-4xl" data-icon="sdk">sdk</span>
+<h4 class="font-h3 text-h3 text-on-surface">SDKs Listos</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Descarga nuestros conectores oficiales para Python, Node.js y PHP.</p>
+</div>
+</section>
+</div>
+<!-- Modal Overlay (Mocked Visibility) -->
+<div class="fixed inset-0 z-[60] flex items-center justify-center bg-inverse-surface/60 backdrop-blur-sm p-4">
+<div class="bg-surface-container-lowest w-full max-w-lg rounded-xl shadow-2xl overflow-hidden">
+<div class="p-xl border-b border-outline-variant flex justify-between items-center">
+<h3 class="font-h2 text-h2 text-on-surface">Nueva API Key Generada</h3>
+<button class="text-on-surface-variant hover:text-on-surface">
+<span class="material-symbols-outlined" data-icon="close">close</span>
+</button>
+</div>
+<div class="p-xl space-y-lg">
+<!-- Warning Banner -->
+<div class="bg-[#fefce8] border-l-4 border-yellow-500 p-md flex gap-md">
+<span class="material-symbols-outlined text-yellow-700" data-icon="warning" style="font-variation-settings: 'FILL' 1;">warning</span>
+<div class="space-y-1">
+<p class="text-yellow-900 font-bold text-sm">Advertencia de Seguridad</p>
+<p class="text-yellow-800 text-xs">Por favor, copia tu clave secreta ahora. Por seguridad, no podremos mostrártela de nuevo una vez que cierres esta ventana.</p>
+</div>
+</div>
+<!-- Secret Key Block -->
+<div class="space-y-sm">
+<label class="font-body-sm text-body-sm text-on-surface-variant font-medium">Secret API Key</label>
+<div class="bg-inverse-surface p-xl rounded-lg flex items-center justify-between border border-outline shadow-inner">
+<code class="font-api-snippet text-api-snippet text-primary-fixed-dim select-all">sk_test_51MzZ2BKlR0x8P...f9a4m2Z9</code>
+<button class="text-primary-fixed-dim hover:text-white transition-colors">
+<span class="material-symbols-outlined" data-icon="content_copy">content_copy</span>
+</button>
+</div>
+</div>
+<div class="flex justify-end gap-md pt-md">
+<button class="px-lg py-md font-bold text-on-surface-variant hover:bg-surface-container rounded-lg transition-colors">Cancelar</button>
+<button class="bg-primary text-white px-xl py-md rounded-lg font-bold hover:bg-opacity-90 shadow-sm">Ya la he guardado</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer Component -->
+<footer class="w-full py-xl bg-surface-container-highest border-t border-outline-variant mt-xl">
+<div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center px-lg gap-md">
+<div class="space-y-1 text-center md:text-left">
+<span class="font-h3 text-h3 font-bold text-primary">CobraPy</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant">© 2024 CobraPy. Infraestructura Fintech para Paraguay.</p>
+</div>
+<nav class="flex gap-lg">
+<a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary hover:underline transition-all" href="#">Términos</a>
+<a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary hover:underline transition-all" href="#">Privacidad</a>
+<a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary hover:underline transition-all" href="#">Documentación</a>
+<a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary hover:underline transition-all" href="#">Soporte</a>
+</nav>
+</div>
+</footer>
+</main>
+<!-- BottomNavBar Component (Mobile Only) -->
+<nav class="lg:hidden fixed bottom-0 left-0 w-full flex justify-around items-center px-4 bg-surface-container-lowest border-t border-outline-variant shadow-lg h-16 z-50">
+<div class="flex flex-col items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="font-body-sm text-[10px]">Home</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+<span class="font-body-sm text-[10px]">Cobros</span>
+</div>
+<div class="flex flex-col items-center justify-center text-primary font-semibold">
+<span class="material-symbols-outlined" data-icon="vpn_key" style="font-variation-settings: 'FILL' 1;">vpn_key</span>
+<span class="font-body-sm text-[10px]">API Keys</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+<span class="font-body-sm text-[10px]">Más</span>
+</div>
+</nav>
+</div>
+</body></html>

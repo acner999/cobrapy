@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+
+<html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CobraPy - Webhooks Management</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface-bright": "#f6fbf2",
+                      "surface-container-high": "#e4eae1",
+                      "on-surface-variant": "#3f4a3f",
+                      "inverse-surface": "#2c322c",
+                      "on-secondary-fixed-variant": "#005236",
+                      "error-container": "#ffdad6",
+                      "surface-container-highest": "#dfe4db",
+                      "surface-container-lowest": "#ffffff",
+                      "surface-variant": "#dfe4db",
+                      "on-primary-container": "#bcffc3",
+                      "inverse-on-surface": "#edf2e9",
+                      "surface-container-low": "#f0f5ec",
+                      "on-tertiary-container": "#ffeaec",
+                      "on-background": "#171d17",
+                      "tertiary-container": "#b3485f",
+                      "surface-dim": "#d6dcd3",
+                      "outline": "#6f7a6e",
+                      "on-primary-fixed": "#00210a",
+                      "inverse-primary": "#78db8c",
+                      "tertiary-fixed": "#ffd9dd",
+                      "on-tertiary-fixed": "#400014",
+                      "surface-container": "#eaf0e6",
+                      "on-tertiary-fixed-variant": "#82223b",
+                      "primary": "#00622b",
+                      "on-error": "#ffffff",
+                      "on-error-container": "#93000a",
+                      "on-primary": "#ffffff",
+                      "on-primary-fixed-variant": "#005323",
+                      "secondary": "#006c49",
+                      "on-tertiary": "#ffffff",
+                      "tertiary-fixed-dim": "#ffb2bd",
+                      "surface-tint": "#006d31",
+                      "error": "#ba1a1a",
+                      "tertiary": "#943048",
+                      "primary-container": "#0a7d3a",
+                      "primary-fixed-dim": "#78db8c",
+                      "surface": "#f6fbf2",
+                      "on-surface": "#171d17",
+                      "outline-variant": "#becabc",
+                      "background": "#f6fbf2",
+                      "secondary-container": "#6cf8bb",
+                      "primary-fixed": "#94f8a6",
+                      "secondary-fixed": "#6ffbbe",
+                      "on-secondary": "#ffffff",
+                      "on-secondary-container": "#00714d",
+                      "on-secondary-fixed": "#002113",
+                      "secondary-fixed-dim": "#4edea3"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "sm": "8px",
+                      "lg": "24px",
+                      "unit": "4px",
+                      "md": "16px",
+                      "xs": "4px",
+                      "xl": "32px",
+                      "margin": "24px",
+                      "gutter": "20px"
+              },
+              "fontFamily": {
+                      "body-base": ["Inter"],
+                      "h1": ["Inter"],
+                      "api-snippet": ["JetBrains Mono"],
+                      "h3": ["Inter"],
+                      "h2": ["Inter"],
+                      "body-sm": ["Inter"],
+                      "data-mono": ["JetBrains Mono"]
+              },
+              "fontSize": {
+                      "body-base": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                      "h1": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                      "api-snippet": ["13px", {"lineHeight": "1.7", "fontWeight": "400"}],
+                      "h3": ["20px", {"lineHeight": "1.4", "fontWeight": "600"}],
+                      "h2": ["24px", {"lineHeight": "1.3", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                      "body-sm": ["14px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                      "data-mono": ["14px", {"lineHeight": "1.4", "fontWeight": "500"}]
+              }
+            },
+          },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        body {
+            background-color: #f6fbf2;
+        }
+    </style>
+</head>
+<body class="font-body-base text-on-surface">
+<!-- TopNavBar -->
+<header class="flex justify-between items-center px-lg w-full sticky top-0 z-40 bg-surface-bright border-b border-outline-variant h-16">
+<div class="flex items-center gap-md">
+<h3 class="font-h3 text-h3 font-bold text-primary">CobraPy</h3>
+<span class="px-sm py-1 bg-surface-container-highest text-on-surface-variant font-data-mono text-[11px] rounded tracking-tighter">Environment: TEST</span>
+</div>
+<div class="flex items-center gap-md">
+<button class="p-2 text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<div class="flex items-center gap-sm pl-md border-l border-outline-variant">
+<span class="material-symbols-outlined text-primary" data-icon="account_circle">account_circle</span>
+<span class="font-body-sm font-medium">Ops Manager</span>
+</div>
+</div>
+</header>
+<div class="flex">
+<!-- SideNavBar -->
+<aside class="hidden lg:flex fixed left-0 top-16 h-[calc(100vh-64px)] w-64 flex-col bg-surface-container-lowest border-r border-outline-variant py-md">
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-md px-lg py-3 text-on-surface-variant hover:bg-surface-container transition-colors font-body-sm" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+                    Home
+                </a>
+<a class="flex items-center gap-md px-lg py-3 text-on-surface-variant hover:bg-surface-container transition-colors font-body-sm" href="#">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+                    Cobros
+                </a>
+<a class="flex items-center gap-md px-lg py-3 text-primary font-bold border-r-4 border-primary bg-surface-container-low font-body-sm" href="#">
+<span class="material-symbols-outlined" data-icon="webhook">webhook</span>
+                    Webhooks
+                </a>
+<a class="flex items-center gap-md px-lg py-3 text-on-surface-variant hover:bg-surface-container transition-colors font-body-sm" href="#">
+<span class="material-symbols-outlined" data-icon="vpn_key">vpn_key</span>
+                    API Keys
+                </a>
+<a class="flex items-center gap-md px-lg py-3 text-on-surface-variant hover:bg-surface-container transition-colors font-body-sm" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+                    Configuración
+                </a>
+<a class="flex items-center gap-md px-lg py-3 text-on-surface-variant hover:bg-surface-container transition-colors font-body-sm" href="#">
+<span class="material-symbols-outlined" data-icon="description">description</span>
+                    Docs
+                </a>
+</nav>
+<div class="px-lg mt-auto">
+<button class="w-full bg-primary text-on-primary py-3 rounded-lg font-bold hover:bg-primary-container transition-all flex items-center justify-center gap-sm shadow-sm">
+<span class="material-symbols-outlined text-sm" data-icon="add">add</span>
+                    Nuevo Cobro
+                </button>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 lg:ml-64 p-lg pb-32">
+<!-- Content Header -->
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-md mb-xl">
+<div>
+<h1 class="font-h1 text-h1 text-on-surface mb-xs">Webhooks</h1>
+<p class="text-on-surface-variant font-body-base">Administra tus endpoints para recibir actualizaciones en tiempo real de tus transacciones.</p>
+</div>
+<button class="bg-primary text-on-primary px-lg py-md rounded-lg font-bold hover:bg-primary-container transition-all flex items-center gap-sm shadow-sm">
+<span class="material-symbols-outlined" data-icon="add_link">add_link</span>
+                    + Agregar endpoint
+                </button>
+</div>
+<!-- Dashboard Grid -->
+<div class="grid grid-cols-1 xl:grid-cols-3 gap-lg">
+<!-- Left: Endpoint List (2/3 width) -->
+<div class="xl:col-span-2 space-y-md">
+<!-- Endpoint Card 1 -->
+<div class="bg-surface-container-lowest border border-outline-variant p-lg rounded-xl shadow-sm hover:shadow-md transition-shadow">
+<div class="flex justify-between items-start mb-md">
+<div class="flex flex-col gap-xs">
+<div class="flex items-center gap-sm">
+<span class="font-data-mono font-bold text-primary text-lg">https://api.merchant.com.py/v1/webhooks/payments</span>
+<span class="bg-secondary-container text-on-secondary-container text-[10px] px-2 py-0.5 rounded-full font-bold">ACTIVE</span>
+</div>
+<span class="text-on-surface-variant font-body-sm">Creado el 12 Oct, 2023</span>
+</div>
+<button class="p-2 hover:bg-surface-container rounded-full transition-colors">
+<span class="material-symbols-outlined" data-icon="more_vert">more_vert</span>
+</button>
+</div>
+<div class="flex flex-wrap gap-sm mb-lg">
+<span class="px-sm py-1 bg-surface-container-high rounded text-on-surface-variant font-data-mono text-[12px]">payment.succeeded</span>
+<span class="px-sm py-1 bg-surface-container-high rounded text-on-surface-variant font-data-mono text-[12px]">payment.failed</span>
+<span class="px-sm py-1 bg-surface-container-high rounded text-on-surface-variant font-data-mono text-[12px]">payout.completed</span>
+</div>
+<div class="flex items-center justify-between pt-md border-t border-outline-variant text-on-surface-variant">
+<div class="flex gap-lg">
+<div class="flex flex-col">
+<span class="text-[10px] font-bold uppercase tracking-wider">Success Rate</span>
+<span class="font-data-mono text-primary font-bold">99.8%</span>
+</div>
+<div class="flex flex-col">
+<span class="text-[10px] font-bold uppercase tracking-wider">Avg Latency</span>
+<span class="font-data-mono">142ms</span>
+</div>
+</div>
+<button class="text-primary font-bold text-body-sm flex items-center gap-xs hover:underline">
+                                Ver registros
+                                <span class="material-symbols-outlined text-[18px]" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Endpoint Card 2 -->
+<div class="bg-surface-container-lowest border border-outline-variant p-lg rounded-xl shadow-sm hover:shadow-md transition-shadow">
+<div class="flex justify-between items-start mb-md">
+<div class="flex flex-col gap-xs">
+<div class="flex items-center gap-sm">
+<span class="font-data-mono font-bold text-primary text-lg">https://backup.pos.py/hooks</span>
+<span class="bg-tertiary-container text-on-tertiary-container text-[10px] px-2 py-0.5 rounded-full font-bold">DISABLED</span>
+</div>
+<span class="text-on-surface-variant font-body-sm">Creado el 05 Nov, 2023</span>
+</div>
+<button class="p-2 hover:bg-surface-container rounded-full transition-colors">
+<span class="material-symbols-outlined" data-icon="more_vert">more_vert</span>
+</button>
+</div>
+<div class="flex flex-wrap gap-sm mb-lg">
+<span class="px-sm py-1 bg-surface-container-high rounded text-on-surface-variant font-data-mono text-[12px]">chargeback.created</span>
+</div>
+<div class="flex items-center justify-between pt-md border-t border-outline-variant text-on-surface-variant opacity-50">
+<div class="flex gap-lg">
+<div class="flex flex-col">
+<span class="text-[10px] font-bold uppercase tracking-wider">Success Rate</span>
+<span class="font-data-mono font-bold">--</span>
+</div>
+<div class="flex flex-col">
+<span class="text-[10px] font-bold uppercase tracking-wider">Avg Latency</span>
+<span class="font-data-mono">--</span>
+</div>
+</div>
+<button class="text-primary font-bold text-body-sm flex items-center gap-xs hover:underline">
+                                Activar endpoint
+                                <span class="material-symbols-outlined text-[18px]" data-icon="power_settings_new">power_settings_new</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Right: Documentation Card (Asymmetric Layout) -->
+<div class="space-y-lg">
+<div class="bg-inverse-surface p-lg rounded-xl text-surface-bright shadow-lg">
+<div class="flex items-center gap-md mb-md">
+<span class="material-symbols-outlined text-primary-fixed-dim" data-icon="code">code</span>
+<h3 class="font-h3 text-h3">Guía de Seguridad</h3>
+</div>
+<p class="font-body-sm text-outline-variant mb-lg">
+                            Todas las peticiones incluyen un header <code class="font-api-snippet bg-on-surface-variant/30 px-1 rounded">X-Cobra-Signature</code> generado con SHA256 para validar la integridad.
+                        </p>
+<div class="bg-black/30 p-md rounded border border-outline/30 mb-lg">
+<p class="font-api-snippet text-xs text-primary-fixed-dim"># Webhook Secret</p>
+<p class="font-api-snippet text-sm tracking-wider">wh_live_••••••••••••4j91</p>
+</div>
+<a class="text-primary-fixed-dim font-bold flex items-center gap-sm hover:underline" href="#">
+                            Ver documentación técnica
+                            <span class="material-symbols-outlined" data-icon="open_in_new">open_in_new</span>
+</a>
+</div>
+<div class="bg-surface-container p-lg rounded-xl border border-outline-variant">
+<h4 class="font-bold mb-md text-on-surface">Estado Global</h4>
+<div class="flex items-center justify-between mb-sm">
+<span class="text-body-sm text-on-surface-variant">Queue status</span>
+<span class="text-body-sm font-bold text-primary">Normal</span>
+</div>
+<div class="w-full bg-surface-container-high h-2 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[12%]"></div>
+</div>
+<p class="text-[11px] text-on-surface-variant mt-md italic">Procesando 1.2k eventos/min en el clúster regional de Asunción.</p>
+</div>
+</div>
+</div>
+</main>
+</div>
+<!-- Right Drawer Overlay (Simulated Open) -->
+<div class="fixed inset-0 bg-on-surface/40 z-50 backdrop-blur-sm lg:flex justify-end hidden">
+<!-- Main Drawer Panel -->
+<div class="bg-surface-container-lowest w-[420px] h-full shadow-2xl flex flex-col border-l border-outline-variant animate-slide-in">
+<!-- Drawer Header -->
+<div class="p-lg border-b border-outline-variant flex items-center justify-between bg-surface-bright">
+<div>
+<h3 class="font-h3 text-h3">Últimas deliveries</h3>
+<p class="text-on-surface-variant font-body-sm">Eventos enviados en las últimas 24h</p>
+</div>
+<button class="p-2 hover:bg-surface-container-high rounded-full transition-colors text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="close">close</span>
+</button>
+</div>
+<!-- Drawer Content: List of Deliveries -->
+<div class="flex-1 overflow-y-auto p-md space-y-md bg-surface-container-low">
+<!-- Delivery Item 1 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-md shadow-sm">
+<div class="flex items-start justify-between mb-sm">
+<div class="flex items-center gap-sm">
+<span class="px-2 py-0.5 bg-green-100 text-green-800 text-[11px] font-bold rounded border border-green-200">200 OK</span>
+<span class="font-data-mono text-xs font-bold">evt_92k8f2..</span>
+</div>
+<span class="text-[11px] text-on-surface-variant">Hace 2m</span>
+</div>
+<div class="mb-md">
+<p class="font-body-sm font-semibold">payment.succeeded</p>
+<p class="text-[11px] text-on-surface-variant truncate">ID: pay_82m4l5p0x9w2</p>
+</div>
+<div class="flex items-center justify-between pt-sm border-t border-outline-variant">
+<div class="flex items-center gap-xs text-[11px] text-on-surface-variant">
+<span class="material-symbols-outlined text-[14px]" data-icon="timer">timer</span>
+                            84ms
+                        </div>
+<button class="text-primary font-bold text-[11px] hover:underline flex items-center gap-xs">
+                            Ver JSON
+                            <span class="material-symbols-outlined text-[14px]" data-icon="visibility">visibility</span>
+</button>
+</div>
+</div>
+<!-- Delivery Item 2 (Failed) -->
+<div class="bg-surface-container-lowest border border-error/20 rounded-lg p-md shadow-sm ring-1 ring-error/5">
+<div class="flex items-start justify-between mb-sm">
+<div class="flex items-center gap-sm">
+<span class="px-2 py-0.5 bg-error-container text-on-error-container text-[11px] font-bold rounded border border-error/20">500 ERROR</span>
+<span class="font-data-mono text-xs font-bold">evt_71n5s9..</span>
+</div>
+<span class="text-[11px] text-on-surface-variant">Hace 15m</span>
+</div>
+<div class="mb-md">
+<p class="font-body-sm font-semibold text-error">payment.failed</p>
+<p class="text-[11px] text-on-surface-variant truncate">ID: pay_31z9v1x4q0m1</p>
+</div>
+<div class="flex items-center justify-between pt-sm border-t border-outline-variant">
+<div class="flex items-center gap-xs text-[11px] text-on-surface-variant">
+<span class="material-symbols-outlined text-[14px]" data-icon="timer">timer</span>
+                            2405ms
+                        </div>
+<div class="flex gap-sm">
+<button class="bg-primary text-on-primary px-3 py-1 rounded text-[11px] font-bold hover:bg-primary-container transition-all flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px]" data-icon="replay">replay</span>
+                                Reintentar
+                            </button>
+</div>
+</div>
+</div>
+<!-- Delivery Item 3 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-md shadow-sm">
+<div class="flex items-start justify-between mb-sm">
+<div class="flex items-center gap-sm">
+<span class="px-2 py-0.5 bg-green-100 text-green-800 text-[11px] font-bold rounded border border-green-200">200 OK</span>
+<span class="font-data-mono text-xs font-bold">evt_32p9w4..</span>
+</div>
+<span class="text-[11px] text-on-surface-variant">Hace 42m</span>
+</div>
+<div class="mb-md">
+<p class="font-body-sm font-semibold">payout.completed</p>
+<p class="text-[11px] text-on-surface-variant truncate">ID: po_11t4r8z0l5k3</p>
+</div>
+<div class="flex items-center justify-between pt-sm border-t border-outline-variant">
+<div class="flex items-center gap-xs text-[11px] text-on-surface-variant">
+<span class="material-symbols-outlined text-[14px]" data-icon="timer">timer</span>
+                            112ms
+                        </div>
+<button class="text-primary font-bold text-[11px] hover:underline flex items-center gap-xs">
+                            Ver JSON
+                            <span class="material-symbols-outlined text-[14px]" data-icon="visibility">visibility</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Drawer Footer -->
+<div class="p-lg border-t border-outline-variant bg-surface-bright">
+<button class="w-full border border-primary text-primary py-3 rounded-lg font-bold hover:bg-primary/5 transition-all text-body-sm">
+                    Ver historial completo
+                </button>
+</div>
+</div>
+</div>
+<!-- Mobile Bottom Navigation -->
+<nav class="lg:hidden fixed bottom-0 left-0 w-full flex justify-around items-center px-4 bg-surface-container-lowest border-t border-outline-variant shadow-lg h-16 z-50">
+<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="text-[10px] mt-1">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+<span class="text-[10px] mt-1">Cobros</span>
+</a>
+<a class="flex flex-col items-center justify-center text-primary font-semibold" href="#">
+<span class="material-symbols-outlined" data-icon="webhook" style="font-variation-settings: 'FILL' 1;">webhook</span>
+<span class="text-[10px] mt-1">Webhooks</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+<span class="text-[10px] mt-1">Más</span>
+</a>
+</nav>
+<!-- Footer -->
+<footer class="bg-surface-container-highest border-t border-outline-variant w-full py-xl mt-12 mb-24 lg:mb-0">
+<div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center px-lg gap-md">
+<div class="flex flex-col items-center md:items-start gap-xs">
+<h3 class="font-h3 text-h3 font-bold text-primary">CobraPy</h3>
+<p class="text-on-surface-variant font-body-sm">© 2024 CobraPy. Infraestructura Fintech para Paraguay.</p>
+</div>
+<div class="flex gap-lg">
+<a class="text-on-surface-variant hover:text-primary transition-all font-body-sm" href="#">Términos</a>
+<a class="text-on-surface-variant hover:text-primary transition-all font-body-sm" href="#">Privacidad</a>
+<a class="text-on-surface-variant hover:text-primary transition-all font-body-sm" href="#">Documentación</a>
+<a class="text-on-surface-variant hover:text-primary transition-all font-body-sm" href="#">Soporte</a>
+</div>
+</div>
+</footer>
+</body></html>
