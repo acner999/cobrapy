@@ -1,0 +1,248 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// =====================================================
+// MERCHANTS - comercios que cobran a través de CobraPy
+// =====================================================
+model Merchant {
+  id            String   @id @default(cuid())
+  businessName  String   @map("business_name")
+  ruc           String   @unique
+  email         String   @unique
+  phone         String?
+  kycStatus     KycStatus @default(PENDING) @map("kyc_status")
+  plan          Plan     @default(FREE)
+  active        Boolean  @default(true)
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  apiKeys       ApiKey[]
+  charges       Charge[]
+  webhooks      WebhookEndpoint[]
+  bankAccounts  BankAccount[]
+
+  @@map("merchants")
+}
+
+enum KycStatus {
+  PENDING
+  IN_REVIEW
+  APPROVED
+  REJECTED
+}
+
+enum Plan {
+  FREE
+  PRO
+  ENTERPRISE
+}
+
+// =====================================================
+// API KEYS - autenticación de comercios para llamar la API
+// =====================================================
+model ApiKey {
+  id          String   @id @default(cuid())
+  merchantId  String   @map("merchant_id")
+  name        String
+  keyPrefix   String   @map("key_prefix") // primeros 8 chars visibles, ej: "ck_live_"
+  keyHash     String   @map("key_hash")   // bcrypt del resto
+  environment Environment @default(TEST)
+  lastUsedAt  DateTime? @map("last_used_at")
+  revokedAt   DateTime? @map("revoked_at")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  merchant    Merchant @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+
+  @@index([keyPrefix])
+  @@index([merchantId])
+  @@map("api_keys")
+}
+
+enum Environment {
+  TEST
+  LIVE
+}
+
+// =====================================================
+// BANK ACCOUNTS - cuentas destino donde se acreditan los pagos
+// =====================================================
+model BankAccount {
+  id            String   @id @default(cuid())
+  merchantId    String   @map("merchant_id")
+  bankCode      String   @map("bank_code")    // código BCP del banco
+  accountNumber String   @map("account_number")
+  accountAlias  String?  @map("account_alias") // alias SIP (cel/email/RUC)
+  isDefault     Boolean  @default(false) @map("is_default")
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  merchant      Merchant @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+
+  @@index([merchantId])
+  @@map("bank_accounts")
+}
+
+// =====================================================
+// CHARGES - intentos de cobro (request del comercio)
+// =====================================================
+model Charge {
+  id              String   @id @default(cuid())
+  merchantId      String   @map("merchant_id")
+  amountGs        BigInt   @map("amount_gs")        // monto en guaraníes (sin decimales en PYG)
+  description     String?
+  status          ChargeStatus @default(PENDING)
+  paymentType     PaymentType  @map("payment_type")
+  qrPayload       String?  @map("qr_payload") @db.Text
+  qrImageUrl      String?  @map("qr_image_url")
+  externalId      String?  @map("external_id")     // ID del comercio para idempotencia
+  metadata        Json?
+  expiresAt       DateTime? @map("expires_at")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  merchant        Merchant @relation(fields: [merchantId], references: [id])
+  transactions    Transaction[]
+
+  @@unique([merchantId, externalId])
+  @@index([merchantId, status])
+  @@index([createdAt])
+  @@map("charges")
+}
+
+enum ChargeStatus {
+  PENDING
+  PROCESSING
+  PAID
+  EXPIRED
+  CANCELED
+  FAILED
+}
+
+enum PaymentType {
+  QR_DYNAMIC
+  QR_STATIC
+  PAYMENT_LINK
+  API_DIRECT
+}
+
+// =====================================================
+// TRANSACTIONS - eventos reales de pago confirmados por SIP
+// (append-only, nunca UPDATE — el estado se modela por nuevas filas)
+// =====================================================
+model Transaction {
+  id              String   @id @default(cuid())
+  chargeId        String   @map("charge_id")
+  sipTransactionId String? @unique @map("sip_transaction_id")
+  amountGs        BigInt   @map("amount_gs")
+  feeGs           BigInt   @default(0) @map("fee_gs")
+  netAmountGs     BigInt   @map("net_amount_gs")
+  payerName       String?  @map("payer_name")
+  payerDocument   String?  @map("payer_document")
+  payerBankCode   String?  @map("payer_bank_code")
+  status          TransactionStatus
+  rawSipResponse  Json?    @map("raw_sip_response")
+  occurredAt      DateTime @default(now()) @map("occurred_at")
+
+  charge          Charge   @relation(fields: [chargeId], references: [id])
+  ledgerEntries   LedgerEntry[]
+
+  @@index([chargeId])
+  @@index([occurredAt])
+  @@map("transactions")
+}
+
+enum TransactionStatus {
+  COMPLETED
+  REVERSED
+  REFUNDED
+  FAILED
+}
+
+// =====================================================
+// LEDGER - contabilidad de doble entrada (append-only)
+// Por cada transacción se crean N filas que deben sumar 0
+// =====================================================
+model LedgerEntry {
+  id              String   @id @default(cuid())
+  transactionId   String   @map("transaction_id")
+  account         String   // ej: "merchant:xxx", "cobrapy:fees", "sip:settlement"
+  debitGs         BigInt   @default(0) @map("debit_gs")
+  creditGs        BigInt   @default(0) @map("credit_gs")
+  description     String?
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  transaction     Transaction @relation(fields: [transactionId], references: [id])
+
+  @@index([transactionId])
+  @@index([account])
+  @@map("ledger_entries")
+}
+
+// =====================================================
+// WEBHOOKS - endpoints HTTP que el comercio registra
+// =====================================================
+model WebhookEndpoint {
+  id          String   @id @default(cuid())
+  merchantId  String   @map("merchant_id")
+  url         String
+  secret      String   // para firmar el payload con HMAC-SHA256
+  events      String[] // ej: ["charge.paid", "charge.expired"]
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  merchant    Merchant @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+  deliveries  WebhookDelivery[]
+
+  @@index([merchantId])
+  @@map("webhook_endpoints")
+}
+
+model WebhookDelivery {
+  id              String   @id @default(cuid())
+  endpointId      String   @map("endpoint_id")
+  eventType       String   @map("event_type")
+  payload         Json
+  status          DeliveryStatus @default(PENDING)
+  attempts        Int      @default(0)
+  lastAttemptAt   DateTime? @map("last_attempt_at")
+  responseStatus  Int?     @map("response_status")
+  responseBody    String?  @map("response_body") @db.Text
+  nextRetryAt     DateTime? @map("next_retry_at")
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  endpoint        WebhookEndpoint @relation(fields: [endpointId], references: [id], onDelete: Cascade)
+
+  @@index([status, nextRetryAt])
+  @@index([endpointId])
+  @@map("webhook_deliveries")
+}
+
+enum DeliveryStatus {
+  PENDING
+  DELIVERED
+  FAILED
+  ABANDONED
+}
+
+// =====================================================
+// AUDIT LOG - todo cambio sensible queda registrado
+// =====================================================
+model AuditLog {
+  id          String   @id @default(cuid())
+  merchantId  String?  @map("merchant_id")
+  actor       String   // "merchant:xxx", "system", "admin:yyy"
+  action      String   // "charge.created", "apikey.revoked", etc.
+  resource    String?
+  metadata    Json?
+  ipAddress   String?  @map("ip_address")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@index([merchantId, createdAt])
+  @@index([action])
+  @@map("audit_logs")
+}

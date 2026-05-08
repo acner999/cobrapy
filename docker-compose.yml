@@ -1,0 +1,31 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: cobrapy-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: cobrapy
+      POSTGRES_PASSWORD: cobrapy
+      POSTGRES_DB: cobrapy
+    ports:
+      - "5432:5432"
+    volumes:
+      - cobrapy-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cobrapy"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: cobrapy-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - cobrapy-redisdata:/data
+
+volumes:
+  cobrapy-pgdata:
+  cobrapy-redisdata:
