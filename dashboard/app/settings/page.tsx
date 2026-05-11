@@ -79,6 +79,10 @@ export default function SettingsPage() {
             bankCode: data[0].bankCode || '',
             accountType: 'CUENTA_CORRIENTE',
             accountNumber: data[0].accountNumber || '',
+            alias: data[0].accountAlias || '',
+            documentType: data[0].documentType || 'RUC',
+            document: data[0].document || '',
+            nameOrBusinessName: data[0].nameOrBusinessName || '',
           });
         }
       }
