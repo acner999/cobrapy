@@ -6,8 +6,7 @@ const envSchema = z.object({
 
   DATABASE_URL: z.string().url(),
 
-  REDIS_HOST: z.string().default('localhost'),
-  REDIS_PORT: z.coerce.number().int().positive().default(6379),
+  REDIS_URL: z.string().default('redis://localhost:6379'),
 
   JWT_SECRET: z.string().min(16, 'JWT_SECRET must be at least 16 chars'),
   ADMIN_TOKEN: z.string().min(8, 'ADMIN_TOKEN must be at least 8 chars'),
