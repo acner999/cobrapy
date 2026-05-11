@@ -53,7 +53,7 @@ export default function PaymentLinksPage() {
   const fetchLinks = async () => {
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/payment-links`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('cobrapy_api_key')}` },
+        headers: { Authorization: `Bearer ${localStorage.getItem('cobrapy_user_token')}` },
       });
       if (res.ok) {
         const data = await res.json();
@@ -79,7 +79,7 @@ export default function PaymentLinksPage() {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${localStorage.getItem('cobrapy_api_key')}`,
+        Authorization: `Bearer ${localStorage.getItem('cobrapy_user_token')}`,
       },
       body: JSON.stringify(body),
     });
@@ -94,7 +94,7 @@ export default function PaymentLinksPage() {
   const deactivate = async (id: string) => {
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/payment-links/${id}/deactivate`, {
       method: 'POST',
-      headers: { Authorization: `Bearer ${localStorage.getItem('cobrapy_api_key')}` },
+      headers: { Authorization: `Bearer ${localStorage.getItem('cobrapy_user_token')}` },
     });
     if (res.ok) fetchLinks();
   };

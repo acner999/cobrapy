@@ -6,6 +6,8 @@ import { UpdateMerchantDto } from './dto/update-merchant.dto';
 import { CreateBankAccountDto } from './dto/create-bank-account.dto';
 import { ApiKeyGuard } from '../auth/api-key.guard';
 import { MerchantId } from '../auth/merchant.decorator';
+import { RequireRole, RoleGuard } from '../auth/role.decorator';
+import { MembershipRole } from '@prisma/client';
 
 @ApiTags('merchants')
 @Controller('merchants')
@@ -43,9 +45,10 @@ export class MerchantsController {
 
   @Patch('me')
   @ApiBearerAuth('api-key')
-  @ApiOperation({ summary: 'Actualizar datos del comercio.' })
+  @ApiOperation({ summary: 'Actualizar datos del comercio. Requiere rol ADMIN o superior.' })
   @ApiOkResponse()
-  @UseGuards(ApiKeyGuard)
+  @UseGuards(ApiKeyGuard, RoleGuard)
+  @RequireRole(MembershipRole.ADMIN)
   async update(@MerchantId() merchantId: string, @Body() dto: UpdateMerchantDto) {
     return this.merchants.update(merchantId, dto);
   }
@@ -60,26 +63,29 @@ export class MerchantsController {
 
   @Post('me/bank-accounts')
   @ApiBearerAuth('api-key')
-  @ApiOperation({ summary: 'Agregar cuenta bancaria.' })
+  @ApiOperation({ summary: 'Agregar cuenta bancaria. Requiere rol ADMIN o superior.' })
   @ApiCreatedResponse()
-  @UseGuards(ApiKeyGuard)
+  @UseGuards(ApiKeyGuard, RoleGuard)
+  @RequireRole(MembershipRole.ADMIN)
   async createBankAccount(@MerchantId() merchantId: string, @Body() dto: CreateBankAccountDto) {
     return this.merchants.createBankAccount(merchantId, dto);
   }
 
   @Delete('me/bank-accounts/:id')
   @ApiBearerAuth('api-key')
-  @ApiOperation({ summary: 'Eliminar cuenta bancaria.' })
-  @UseGuards(ApiKeyGuard)
+  @ApiOperation({ summary: 'Eliminar cuenta bancaria. Requiere rol ADMIN o superior.' })
+  @UseGuards(ApiKeyGuard, RoleGuard)
+  @RequireRole(MembershipRole.ADMIN)
   async deleteBankAccount(@MerchantId() merchantId: string, @Param('id', ParseUUIDPipe) id: string) {
     return this.merchants.deleteBankAccount(merchantId, id);
   }
 
   @Patch('me/bank-accounts/:id')
   @ApiBearerAuth('api-key')
-  @ApiOperation({ summary: 'Actualizar cuenta bancaria.' })
+  @ApiOperation({ summary: 'Actualizar cuenta bancaria. Requiere rol ADMIN o superior.' })
   @ApiOkResponse()
-  @UseGuards(ApiKeyGuard)
+  @UseGuards(ApiKeyGuard, RoleGuard)
+  @RequireRole(MembershipRole.ADMIN)
   async updateBankAccount(
     @MerchantId() merchantId: string,
     @Param('id', ParseUUIDPipe) id: string,

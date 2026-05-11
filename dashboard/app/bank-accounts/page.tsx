@@ -44,7 +44,7 @@ export default function BankAccountsPage() {
 
   const fetchAccounts = async () => {
     try {
-      const key = localStorage.getItem('cobrapy_api_key');
+      const key = localStorage.getItem('cobrapy_user_token');
       const [accountsRes, banksRes] = await Promise.all([
         fetch(`${process.env.NEXT_PUBLIC_API_URL}/merchants/me/bank-accounts`, {
           headers: { Authorization: `Bearer ${key}` },
@@ -68,7 +68,7 @@ export default function BankAccountsPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const key = localStorage.getItem('cobrapy_api_key');
+    const key = localStorage.getItem('cobrapy_user_token');
     const method = editingId ? 'PATCH' : 'POST';
     const url = editingId 
       ? `${process.env.NEXT_PUBLIC_API_URL}/merchants/me/bank-accounts/${editingId}`
@@ -126,7 +126,7 @@ export default function BankAccountsPage() {
   const handleDelete = async (id: string) => {
     if (!confirm('¿Estás seguro de que querés eliminar esta cuenta?')) return;
     
-    const key = localStorage.getItem('cobrapy_api_key');
+    const key = localStorage.getItem('cobrapy_user_token');
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/merchants/me/bank-accounts/${id}`, {
       method: 'DELETE',
       headers: { Authorization: `Bearer ${key}` },

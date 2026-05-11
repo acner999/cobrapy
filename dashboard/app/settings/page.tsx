@@ -56,7 +56,7 @@ export default function SettingsPage() {
 
   const fetchData = async () => {
     try {
-      const key = localStorage.getItem('cobrapy_api_key');
+      const key = localStorage.getItem('cobrapy_user_token');
       const headers = { Authorization: `Bearer ${key}` };
 
       const [merchantRes, accountsRes, banksRes] = await Promise.all([
@@ -97,7 +97,7 @@ export default function SettingsPage() {
   const handleSave = async () => {
     setSaving(true);
     try {
-      const key = localStorage.getItem('cobrapy_api_key');
+      const key = localStorage.getItem('cobrapy_user_token');
       
       await fetch(`${process.env.NEXT_PUBLIC_API_URL}/merchants/me`, {
         method: 'PATCH',

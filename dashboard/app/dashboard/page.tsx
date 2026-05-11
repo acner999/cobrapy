@@ -74,7 +74,7 @@ export default function DashboardPage() {
 
   const fetchData = async () => {
     try {
-      const key = localStorage.getItem('cobrapy_api_key');
+      const key = localStorage.getItem('cobrapy_user_token');
       const headers = { Authorization: `Bearer ${key}` };
 
       const [chargesRes, linksRes] = await Promise.all([
