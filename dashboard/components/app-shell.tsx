@@ -12,7 +12,14 @@ interface AppShellProps {
   children: ReactNode;
 }
 
-const navItems = [
+interface NavItem {
+  href: string;
+  label: string;
+  icon: string;
+  external?: boolean;
+}
+
+const navItems: NavItem[] = [
   { href: '/dashboard', label: 'Home', icon: 'dashboard' },
   { href: '/charges', label: 'Cobros', icon: 'payments' },
   { href: '/payment-links', label: 'Links de Pago', icon: 'link' },
@@ -23,9 +30,9 @@ const navItems = [
   { href: '/settings/team', label: 'Equipo', icon: 'group' },
 ];
 
-const adminNavItems = [
+const adminNavItems: NavItem[] = [
   { href: '/admin/banks', label: 'Admin Bancos', icon: 'admin_panel_settings' },
-  { href: 'http://localhost:3000/docs', label: 'Docs', icon: 'description', external: true },
+  { href: `${process.env.NEXT_PUBLIC_API_URL}/docs`, label: 'Docs', icon: 'description', external: true },
 ];
 
 async function validateAdminToken(): Promise<boolean> {
