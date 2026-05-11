@@ -12,7 +12,7 @@ describe('validateEnv', () => {
     const env = validateEnv({ ...baseEnv, NODE_ENV: 'development', PORT: '3000' });
     expect(env.NODE_ENV).toBe('development');
     expect(env.PORT).toBe(3000);
-    expect(env.REDIS_HOST).toBe('localhost'); // default
+    expect(env.REDIS_URL).toBe('redis://localhost:6379'); // default
   });
 
   it('coerces PORT from string to number', () => {
