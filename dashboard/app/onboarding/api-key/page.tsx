@@ -1,9 +1,10 @@
 'use client';
+import { Suspense } from 'react';
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Icon } from '@/components/icon';
 
-export default function ApiKeyPage() {
+function ApiKeyContent() {
   const router = useRouter();
   const params = useSearchParams();
   const [copied, setCopied] = useState(false);
@@ -84,7 +85,7 @@ export default function ApiKeyPage() {
             <div>
               <h3 className="font-body-sm text-body-sm font-bold">Documentación</h3>
               <p className="font-body-sm text-body-sm text-on-surface-variant">
-                <a href="http://localhost:3000/docs" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                <a href={`${process.env.NEXT_PUBLIC_API_URL}/docs`} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
                   Abrí Swagger en /docs
                 </a>
               </p>
@@ -108,5 +109,13 @@ export default function ApiKeyPage() {
         </button>
       </main>
     </div>
+  );
+}
+
+export default function ApiKeyPage() {
+  return (
+    <Suspense>
+      <ApiKeyContent />
+    </Suspense>
   );
 }
