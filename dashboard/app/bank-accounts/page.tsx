@@ -177,7 +177,7 @@ export default function BankAccountsPage() {
                   required
                 >
                   <option value="">Seleccionar banco...</option>
-                  {BANKS.map((bank) => (
+                  {banks.map((bank) => (
                     <option key={bank.code} value={bank.code}>{bank.name}</option>
                   ))}
                 </select>
