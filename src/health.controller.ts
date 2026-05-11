@@ -33,9 +33,7 @@ export class HealthController {
   }
 
   private async checkRedis() {
-    const redis = new Redis({
-      host: process.env.REDIS_HOST ?? 'localhost',
-      port: parseInt(process.env.REDIS_PORT ?? '6379', 10),
+    const redis = new Redis(process.env.REDIS_URL ?? 'redis://localhost:6379', {
       lazyConnect: true,
       connectTimeout: 2000,
       maxRetriesPerRequest: 1,

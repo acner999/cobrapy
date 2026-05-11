@@ -14,6 +14,7 @@ import { UsersModule } from './users/users.module';
 import { TeamsModule } from './teams/teams.module';
 import { WhatsAppModule } from './whatsapp/whatsapp.module';
 import { HealthController } from './health.controller';
+import { RootController } from './root.controller';
 import { RequestIdMiddleware } from './common/request-id.middleware';
 
 @Module({
@@ -33,7 +34,7 @@ import { RequestIdMiddleware } from './common/request-id.middleware';
     PaymentLinksModule,
     WhatsAppModule,
   ],
-  controllers: [HealthController],
+  controllers: [RootController, HealthController],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
