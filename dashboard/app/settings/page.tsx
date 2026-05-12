@@ -40,15 +40,7 @@ export default function SettingsPage() {
     phone: '',
   });
   
-  const [bankForm, setBankForm] = useState({
-    bankCode: '',
-    accountType: 'CUENTA_CORRIENTE',
-    accountNumber: '',
-    alias: '',
-    documentType: 'RUC',
-    document: '',
-    nameOrBusinessName: '',
-  });
+  const [selectedAccountId, setSelectedAccountId] = useState<string>('');
 
   useEffect(() => {
     fetchData();
@@ -74,17 +66,9 @@ export default function SettingsPage() {
       if (accountsRes.ok) {
         const data = await accountsRes.json();
         setBankAccounts(data);
-        if (data.length > 0) {
-          setBankForm({
-            bankCode: data[0].bankCode || '',
-            accountType: 'CUENTA_CORRIENTE',
-            accountNumber: data[0].accountNumber || '',
-            alias: data[0].accountAlias || '',
-            documentType: data[0].documentType || 'RUC',
-            document: data[0].document || '',
-            nameOrBusinessName: data[0].nameOrBusinessName || '',
-          });
-        }
+        const def = data.find((a: BankAccount) => a.isDefault);
+        if (def) setSelectedAccountId(def.id);
+        else if (data.length > 0) setSelectedAccountId(data[0].id);
       }
 
       if (banksRes.ok) {
@@ -102,21 +86,28 @@ export default function SettingsPage() {
     setSaving(true);
     try {
       const key = localStorage.getItem('cobrapy_user_token');
-      
-      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/merchants/me`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${key}`,
-        },
-        body: JSON.stringify({
-          email: form.email,
-          phone: form.phone,
-        }),
-      });
+      const headers = { 'Content-Type': 'application/json', Authorization: `Bearer ${key}` };
 
+      const requests: Promise<unknown>[] = [
+        fetch(`${process.env.NEXT_PUBLIC_API_URL}/merchants/me`, {
+          method: 'PATCH', headers,
+          body: JSON.stringify({ email: form.email, phone: form.phone }),
+        }),
+      ];
+
+      if (selectedAccountId) {
+        requests.push(
+          fetch(`${process.env.NEXT_PUBLIC_API_URL}/merchants/me/bank-accounts/${selectedAccountId}`, {
+            method: 'PATCH', headers,
+            body: JSON.stringify({ isDefault: true }),
+          }),
+        );
+      }
+
+      await Promise.all(requests);
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
+      fetchData();
     } catch (e) {
       console.error(e);
     } finally {
@@ -226,99 +217,69 @@ export default function SettingsPage() {
           </section>
 
           <section className="bg-surface-container-lowest border border-outline-variant rounded-xl p-xl shadow-sm">
-            <div className="flex items-center gap-md mb-lg">
-              <span className="material-symbols-outlined text-primary bg-primary-container/20 p-2 rounded-lg">account_balance</span>
-              <h2 className="text-h3">Cuenta Bancaria Destino (SIP)</h2>
+            <div className="flex items-center justify-between mb-lg">
+              <div className="flex items-center gap-md">
+                <span className="material-symbols-outlined text-primary bg-primary-container/20 p-2 rounded-lg">account_balance</span>
+                <h2 className="text-h3">Cuenta Bancaria Destino (SIP)</h2>
+              </div>
+              <a href="/bank-accounts" className="text-body-sm text-primary hover:underline flex items-center gap-xs">
+                <span className="material-symbols-outlined text-[16px]">open_in_new</span>
+                Gestionar cuentas
+              </a>
             </div>
             <div className="p-lg bg-surface-bright border-l-4 border-primary rounded-r-lg mb-lg">
               <p className="text-body-sm text-on-surface-variant leading-relaxed">
                 Los fondos recaudados se liquidarán automáticamente a esta cuenta a través del Sistema de Interconexión de Pagos (SIP) del BCP.
               </p>
             </div>
-            <div className="space-y-lg">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-md">
-                <div className="space-y-unit">
-                  <label className="text-body-sm font-medium text-on-surface-variant">Banco</label>
-                  <select
-                    className="w-full p-md border border-outline-variant rounded-lg text-on-surface focus:ring-1 focus:ring-primary outline-none"
-                    value={bankForm.bankCode}
-                    onChange={(e) => setBankForm({ ...bankForm, bankCode: e.target.value })}
-                  >
-                    <option value="">Seleccionar banco...</option>
-                    {banks.map((bank) => (
-                      <option key={bank.code} value={bank.code}>{bank.name}</option>
-                    ))}
-                  </select>
-                </div>
-                <div className="space-y-unit">
-                  <label className="text-body-sm font-medium text-on-surface-variant">Tipo de Cuenta</label>
-                  <select
-                    className="w-full p-md border border-outline-variant rounded-lg text-on-surface focus:ring-1 focus:ring-primary outline-none"
-                    value={bankForm.accountType}
-                    onChange={(e) => setBankForm({ ...bankForm, accountType: e.target.value })}
-                  >
-                    <option value="CUENTA_CORRIENTE">Cuenta Corriente</option>
-                    <option value="CAJA_AHORROS">Caja de Ahorros</option>
-                  </select>
-                </div>
+            {bankAccounts.length === 0 ? (
+              <div className="text-center py-lg border-2 border-dashed border-outline-variant rounded-lg">
+                <span className="material-symbols-outlined text-4xl text-on-surface-variant mb-sm block">account_balance</span>
+                <p className="text-on-surface-variant text-body-sm mb-md">No tenés cuentas bancarias registradas.</p>
+                <a href="/bank-accounts" className="text-primary font-bold hover:underline text-body-sm">
+                  Agregar una cuenta
+                </a>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-md">
-                <div className="space-y-unit">
-                  <label className="text-body-sm font-medium text-on-surface-variant">Alias (opcional)</label>
-                  <input
-                    className="w-full p-md border border-outline-variant rounded-lg text-on-surface focus:ring-1 focus:ring-primary outline-none"
-                    type="text"
-                    value={bankForm.alias}
-                    onChange={(e) => setBankForm({ ...bankForm, alias: e.target.value })}
-                    placeholder="mi-cuenta-banco"
-                  />
-                </div>
-                <div className="space-y-unit">
-                  <label className="text-body-sm font-medium text-on-surface-variant">Tipo de Documento</label>
-                  <select
-                    className="w-full p-md border border-outline-variant rounded-lg text-on-surface focus:ring-1 focus:ring-primary outline-none"
-                    value={bankForm.documentType}
-                    onChange={(e) => setBankForm({ ...bankForm, documentType: e.target.value })}
-                  >
-                    <option value="RUC">RUC</option>
-                    <option value="CEDULA">Cédula de Identidad</option>
-                    <option value="PASAPORTE">Pasaporte</option>
-                  </select>
-                </div>
+            ) : (
+              <div className="space-y-sm">
+                {bankAccounts.map((account) => {
+                  const bankName = banks.find(b => b.code === account.bankCode)?.name || account.bankCode;
+                  const isSelected = selectedAccountId === account.id;
+                  return (
+                    <label
+                      key={account.id}
+                      className={`flex items-center gap-md p-md rounded-lg border cursor-pointer transition-colors ${
+                        isSelected
+                          ? 'border-primary bg-primary-container/10'
+                          : 'border-outline-variant hover:bg-surface-container-low'
+                      }`}
+                    >
+                      <input
+                        type="radio"
+                        name="defaultAccount"
+                        value={account.id}
+                        checked={isSelected}
+                        onChange={() => setSelectedAccountId(account.id)}
+                        className="text-primary"
+                      />
+                      <span className="material-symbols-outlined text-primary">account_balance</span>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium text-on-surface">{bankName}</p>
+                        <p className="text-body-sm text-on-surface-variant font-data-mono">
+                          {account.accountNumber}
+                          {account.accountAlias ? ` · ${account.accountAlias}` : ''}
+                        </p>
+                      </div>
+                      {account.isDefault && (
+                        <span className="text-[10px] font-bold uppercase px-sm py-xs bg-primary-container text-on-primary-container rounded-full">
+                          Predeterminada
+                        </span>
+                      )}
+                    </label>
+                  );
+                })}
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-md">
-                <div className="space-y-unit">
-                  <label className="text-body-sm font-medium text-on-surface-variant">Número de Documento</label>
-                  <input
-                    className="w-full p-md border border-outline-variant rounded-lg font-data-mono text-on-surface focus:ring-1 focus:ring-primary outline-none"
-                    type="text"
-                    value={bankForm.document}
-                    onChange={(e) => setBankForm({ ...bankForm, document: e.target.value })}
-                    placeholder="80123456-7"
-                  />
-                </div>
-                <div className="space-y-unit">
-                  <label className="text-body-sm font-medium text-on-surface-variant">Nombre o Razón Social</label>
-                  <input
-                    className="w-full p-md border border-outline-variant rounded-lg text-on-surface focus:ring-1 focus:ring-primary outline-none"
-                    type="text"
-                    value={bankForm.nameOrBusinessName}
-                    onChange={(e) => setBankForm({ ...bankForm, nameOrBusinessName: e.target.value })}
-                    placeholder="Nombre completo o razón social"
-                  />
-                </div>
-              </div>
-              <div className="space-y-unit">
-                <label className="text-body-sm font-medium text-on-surface-variant">Número de Cuenta</label>
-                <input
-                  className="w-full p-md border border-outline-variant rounded-lg font-data-mono text-on-surface focus:ring-1 focus:ring-primary outline-none"
-                  type="text"
-                  value={bankForm.accountNumber}
-                  onChange={(e) => setBankForm({ ...bankForm, accountNumber: e.target.value })}
-                  placeholder="700123456"
-                />
-              </div>
-            </div>
+            )}
           </section>
         </div>
 
