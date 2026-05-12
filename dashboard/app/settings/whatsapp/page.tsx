@@ -120,7 +120,7 @@ export default function WhatsAppSettingsPage() {
             </div>
           ) : accounts.length === 0 ? (
             <div className="p-xl text-center text-on-surface-variant">
-              <Icon name="whatsapp" className="text-5xl mb-md block mx-auto opacity-30" />
+              <Icon name="chat" className="text-5xl mb-md block mx-auto opacity-30" />
               <p>No hay números vinculados.</p>
             </div>
           ) : (
@@ -128,7 +128,7 @@ export default function WhatsAppSettingsPage() {
               {accounts.map(acc => (
                 <li key={acc.id} className="flex items-center justify-between px-xl py-md">
                   <div className="flex items-center gap-md">
-                    <Icon name="whatsapp" className="text-[#25D366] text-2xl" />
+                    <Icon name="chat" className="text-[#25D366] text-2xl" />
                     <div>
                       <p className="font-data-mono font-medium text-on-surface">{acc.phone}</p>
                       <p className="text-body-sm text-on-surface-variant">

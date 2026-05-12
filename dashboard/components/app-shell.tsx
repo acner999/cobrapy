@@ -32,7 +32,7 @@ const navItems: NavItem[] = [
     href: '/settings', label: 'Configuración', icon: 'settings',
     children: [
       { href: '/settings/team', label: 'Equipo', icon: 'group' },
-      { href: '/settings/whatsapp', label: 'WhatsApp', icon: 'whatsapp' },
+      { href: '/settings/whatsapp', label: 'WhatsApp', icon: 'chat' },
     ],
   },
 ];
