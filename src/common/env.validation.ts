@@ -11,8 +11,12 @@ const envSchema = z.object({
   JWT_SECRET: z.string().min(16, 'JWT_SECRET must be at least 16 chars'),
   ADMIN_TOKEN: z.string().min(8, 'ADMIN_TOKEN must be at least 8 chars'),
 
-  SIP_API_BASE_URL: z.string().url().optional(),
-  SIP_PARTICIPANT_ID: z.string().optional(),
+  // SIP real (BCP) — opcionales en dev, obligatorios en prod con SIP_REAL=true
+  SIP_REAL: z.string().optional(),
+  SIP_BASE_URL: z.string().url().optional(),
+  SIP_CLIENT_ID: z.string().optional(),
+  SIP_CLIENT_SECRET: z.string().optional(),
+  SIP_WEBHOOK_SECRET: z.string().optional(),
 });
 
 export type Env = z.infer<typeof envSchema>;

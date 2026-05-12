@@ -22,12 +22,14 @@ interface NavItem {
 const navItems: NavItem[] = [
   { href: '/dashboard', label: 'Home', icon: 'dashboard' },
   { href: '/charges', label: 'Cobros', icon: 'payments' },
+  { href: '/subscriptions', label: 'Suscripciones', icon: 'autorenew' },
   { href: '/payment-links', label: 'Links de Pago', icon: 'link' },
   { href: '/webhooks', label: 'Webhooks', icon: 'webhook' },
   { href: '/api-keys', label: 'API Keys', icon: 'vpn_key' },
   { href: '/bank-accounts', label: 'Cuentas Bancarias', icon: 'account_balance' },
   { href: '/settings', label: 'Configuración', icon: 'settings' },
   { href: '/settings/team', label: 'Equipo', icon: 'group' },
+  { href: '/settings/whatsapp', label: 'WhatsApp', icon: 'whatsapp' },
 ];
 
 const adminNavItems: NavItem[] = [

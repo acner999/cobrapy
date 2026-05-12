@@ -23,12 +23,14 @@ model Merchant {
   createdAt     DateTime @default(now()) @map("created_at")
   updatedAt     DateTime @updatedAt @map("updated_at")
 
-  apiKeys       ApiKey[]
-  charges       Charge[]
-  webhooks      WebhookEndpoint[]
-  bankAccounts  BankAccount[]
-  paymentLinks  PaymentLink[]
-  memberships   Membership[]
+  apiKeys               ApiKey[]
+  charges               Charge[]
+  webhooks              WebhookEndpoint[]
+  bankAccounts          BankAccount[]
+  paymentLinks          PaymentLink[]
+  memberships           Membership[]
+  subscriptionPlans     SubscriptionPlan[]
+  customerSubscriptions CustomerSubscription[]
 
   @@map("merchants")
 }
@@ -227,13 +229,15 @@ model Charge {
   paymentType     PaymentType  @map("payment_type")
   qrPayload       String?  @map("qr_payload") @db.Text
   qrImageUrl      String?  @map("qr_image_url")
-  externalId      String?  @map("external_id")     // ID del comercio para idempotencia
+  externalId      String?  @map("external_id")
+  subscriptionId  String?  @map("subscription_id")
   metadata        Json?
   expiresAt       DateTime? @map("expires_at")
   createdAt       DateTime @default(now()) @map("created_at")
   updatedAt       DateTime @updatedAt @map("updated_at")
 
-  merchant        Merchant @relation(fields: [merchantId], references: [id])
+  merchant        Merchant              @relation(fields: [merchantId], references: [id])
+  subscription    CustomerSubscription? @relation(fields: [subscriptionId], references: [id])
   transactions    Transaction[]
 
   @@unique([merchantId, externalId])
@@ -355,6 +359,74 @@ enum DeliveryStatus {
   DELIVERED
   FAILED
   ABANDONED
+}
+
+// =====================================================
+// SUBSCRIPTION PLANS - planes recurrentes que el comercio ofrece a sus clientes
+// =====================================================
+model SubscriptionPlan {
+  id            String          @id @default(cuid())
+  merchantId    String          @map("merchant_id")
+  name          String
+  description   String?
+  amountGs      BigInt          @map("amount_gs")
+  interval      BillingInterval
+  intervalCount Int             @default(1) @map("interval_count")
+  trialDays     Int?            @map("trial_days")
+  active        Boolean         @default(true)
+  createdAt     DateTime        @default(now()) @map("created_at")
+  updatedAt     DateTime        @updatedAt @map("updated_at")
+
+  merchant      Merchant              @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+  subscriptions CustomerSubscription[]
+
+  @@index([merchantId])
+  @@map("subscription_plans")
+}
+
+enum BillingInterval {
+  DAILY
+  WEEKLY
+  MONTHLY
+  YEARLY
+}
+
+// =====================================================
+// CUSTOMER SUBSCRIPTIONS - clientes del comercio que pagan de forma recurrente
+// =====================================================
+model CustomerSubscription {
+  id                 String             @id @default(cuid())
+  merchantId         String             @map("merchant_id")
+  planId             String             @map("plan_id")
+  customerEmail      String             @map("customer_email")
+  customerName       String             @map("customer_name")
+  customerPhone      String?            @map("customer_phone")
+  externalId         String?            @map("external_id")
+  status             SubscriptionStatus @default(ACTIVE)
+  currentPeriodStart DateTime           @map("current_period_start")
+  currentPeriodEnd   DateTime           @map("current_period_end")
+  nextChargeAt       DateTime           @map("next_charge_at")
+  trialEndsAt        DateTime?          @map("trial_ends_at")
+  canceledAt         DateTime?          @map("canceled_at")
+  createdAt          DateTime           @default(now()) @map("created_at")
+  updatedAt          DateTime           @updatedAt @map("updated_at")
+
+  merchant           Merchant         @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+  plan               SubscriptionPlan @relation(fields: [planId], references: [id])
+  charges            Charge[]
+
+  @@unique([merchantId, externalId])
+  @@index([merchantId])
+  @@index([nextChargeAt, status])
+  @@map("customer_subscriptions")
+}
+
+enum SubscriptionStatus {
+  TRIALING
+  ACTIVE
+  PAST_DUE
+  PAUSED
+  CANCELED
 }
 
 // =====================================================

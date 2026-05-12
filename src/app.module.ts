@@ -1,6 +1,7 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ThrottlerModule } from '@nestjs/throttler';
+import { ScheduleModule } from '@nestjs/schedule';
 import { PrismaModule } from './prisma/prisma.module';
 import { QueueModule } from './common/queue.module';
 import { AuthModule } from './auth/auth.module';
@@ -13,6 +14,8 @@ import { PaymentLinksModule } from './payment-links/payment-links.module';
 import { UsersModule } from './users/users.module';
 import { TeamsModule } from './teams/teams.module';
 import { WhatsAppModule } from './whatsapp/whatsapp.module';
+import { SipModule } from './sip/sip.module';
+import { SubscriptionsModule } from './subscriptions/subscriptions.module';
 import { HealthController } from './health.controller';
 import { RootController } from './root.controller';
 import { RequestIdMiddleware } from './common/request-id.middleware';
@@ -21,6 +24,7 @@ import { RequestIdMiddleware } from './common/request-id.middleware';
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     ThrottlerModule.forRoot([{ ttl: 60_000, limit: 100 }]),
+    ScheduleModule.forRoot(),
     PrismaModule,
     QueueModule,
     UsersModule,
@@ -33,6 +37,8 @@ import { RequestIdMiddleware } from './common/request-id.middleware';
     AdminPortalModule,
     PaymentLinksModule,
     WhatsAppModule,
+    SipModule,
+    SubscriptionsModule,
   ],
   controllers: [RootController, HealthController],
 })

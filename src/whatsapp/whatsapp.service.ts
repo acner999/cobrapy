@@ -5,7 +5,7 @@ import { WhatsAppSender } from './whatsapp.sender';
 import { parseMessage } from './whatsapp.parser';
 import { WaDirection } from '@prisma/client';
 
-const PUBLIC_BASE_URL = process.env.PUBLIC_BASE_URL ?? 'http://localhost:3001';
+const PUBLIC_BASE_URL = (process.env.PUBLIC_BASE_URL ?? 'http://localhost:3001').replace(/\/$/, '');
 const SIP_LIMIT_GS = 10_000_000;
 
 @Injectable()
@@ -127,6 +127,9 @@ export class WhatsAppService {
 
   async linkAccount(merchantId: string, phone: string, userId?: string) {
     const normalized = normalizePhone(phone);
+    if (!isValidPyMobile(normalized)) {
+      throw new Error(`Número inválido: ${phone}. Usá el formato +595XXXXXXXXX (celular paraguayo).`);
+    }
     return this.prisma.whatsAppAccount.upsert({
       where: { phone: normalized },
       create: { phone: normalized, merchantId, userId, verifiedAt: new Date() },
@@ -176,11 +179,31 @@ export class WhatsAppService {
   }
 }
 
-function normalizePhone(raw: string): string {
-  // Twilio manda "whatsapp:+595981000000". Quitar prefijo y normalizar a E.164.
-  const stripped = raw.replace(/^whatsapp:/i, '').trim();
-  if (stripped.startsWith('+')) return stripped;
-  // Heurística PY: si empieza con "0" lo tratamos como local
-  if (stripped.startsWith('0')) return '+595' + stripped.slice(1);
-  return stripped;
+// Prefijos de operadoras celulares de Paraguay (sin el 0 inicial)
+const PY_MOBILE_PREFIXES = /^9(6[1-6]|7[1-9]|8[0-9]|9[0-9])/;
+
+export function normalizePhone(raw: string): string {
+  // Quitar prefijo Twilio y cualquier carácter no numérico excepto el + inicial
+  const clean = raw.replace(/^whatsapp:/i, '').replace(/[\s\-().]/g, '').trim();
+  const digits = clean.replace(/^\+/, '');
+
+  // +595XXXXXXXXX o 595XXXXXXXXX (12 dígitos con código país)
+  if (digits.startsWith('595') && digits.length === 12) return '+' + digits;
+
+  // 0XXXXXXXXX (10 dígitos, formato local PY con 0)
+  if (digits.startsWith('0') && digits.length === 10) return '+595' + digits.slice(1);
+
+  // XXXXXXXXX (9 dígitos, sin 0 ni código país)
+  if (digits.length === 9 && PY_MOBILE_PREFIXES.test(digits)) return '+595' + digits;
+
+  // Ya venía con + y no matcheó arriba → devolver tal cual
+  if (clean.startsWith('+')) return clean;
+
+  return '+595' + digits;
+}
+
+export function isValidPyMobile(e164: string): boolean {
+  // +595 seguido de 9 dígitos que empiezan con prefijo de celular PY
+  const m = e164.match(/^\+595(\d{9})$/);
+  return !!m && PY_MOBILE_PREFIXES.test(m[1]);
 }
