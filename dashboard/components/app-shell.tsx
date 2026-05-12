@@ -31,6 +31,7 @@ const navItems: NavItem[] = [
   {
     href: '/settings', label: 'Configuración', icon: 'settings',
     children: [
+      { href: '/settings', label: 'Ajustes', icon: 'tune' },
       { href: '/settings/team', label: 'Equipo', icon: 'group' },
       { href: '/settings/whatsapp', label: 'WhatsApp', icon: 'chat' },
     ],
@@ -60,6 +61,7 @@ export function AppShell({ breadcrumb, children }: AppShellProps) {
   const pathname = usePathname();
   const [authed, setAuthed] = useState<boolean | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [openSections, setOpenSections] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     const has = !!getUserToken();
@@ -90,10 +92,10 @@ export function AppShell({ breadcrumb, children }: AppShellProps) {
         </div>
         <nav className="flex-1 px-sm space-y-unit overflow-y-auto custom-scrollbar">
           {navItems.map((item) => {
-            const active = !item.external && isActive(item.href);
+            const active = !item.external && !item.children && isActive(item.href);
             const hasChildren = !!item.children?.length;
-            const expanded = hasChildren && pathname?.startsWith(item.href);
-            const cls = active
+            const expanded = hasChildren && (openSections[item.href] ?? !!pathname?.startsWith(item.href));
+            const cls = (hasChildren ? expanded : active)
               ? 'flex items-center gap-md px-md py-sm rounded-lg text-primary font-bold border-r-4 border-primary bg-surface-container transition-colors font-body-sm text-body-sm tracking-wide'
               : 'flex items-center gap-md px-md py-sm rounded-lg text-on-surface-variant hover:text-primary hover:bg-surface-container transition-colors font-body-sm text-body-sm tracking-wide';
             const inner = (
@@ -105,7 +107,9 @@ export function AppShell({ breadcrumb, children }: AppShellProps) {
             );
             return (
               <div key={item.href}>
-                {item.external ? (
+                {hasChildren ? (
+                  <button type="button" onClick={() => setOpenSections(p => ({ ...p, [item.href]: !expanded }))} className={cls + ' w-full text-left'}>{inner}</button>
+                ) : item.external ? (
                   <a href={item.href} target="_blank" rel="noopener noreferrer" className={cls}>{inner}</a>
                 ) : (
                   <Link href={item.href} className={cls}>{inner}</Link>
