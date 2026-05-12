@@ -17,6 +17,7 @@ interface NavItem {
   label: string;
   icon: string;
   external?: boolean;
+  children?: NavItem[];
 }
 
 const navItems: NavItem[] = [
@@ -27,9 +28,13 @@ const navItems: NavItem[] = [
   { href: '/webhooks', label: 'Webhooks', icon: 'webhook' },
   { href: '/api-keys', label: 'API Keys', icon: 'vpn_key' },
   { href: '/bank-accounts', label: 'Cuentas Bancarias', icon: 'account_balance' },
-  { href: '/settings', label: 'Configuración', icon: 'settings' },
-  { href: '/settings/team', label: 'Equipo', icon: 'group' },
-  { href: '/settings/whatsapp', label: 'WhatsApp', icon: 'whatsapp' },
+  {
+    href: '/settings', label: 'Configuración', icon: 'settings',
+    children: [
+      { href: '/settings/team', label: 'Equipo', icon: 'group' },
+      { href: '/settings/whatsapp', label: 'WhatsApp', icon: 'whatsapp' },
+    ],
+  },
 ];
 
 const adminNavItems: NavItem[] = [
@@ -86,19 +91,42 @@ export function AppShell({ breadcrumb, children }: AppShellProps) {
         <nav className="flex-1 px-sm space-y-unit overflow-y-auto custom-scrollbar">
           {navItems.map((item) => {
             const active = !item.external && isActive(item.href);
+            const hasChildren = !!item.children?.length;
+            const expanded = hasChildren && pathname?.startsWith(item.href);
             const cls = active
               ? 'flex items-center gap-md px-md py-sm rounded-lg text-primary font-bold border-r-4 border-primary bg-surface-container transition-colors font-body-sm text-body-sm tracking-wide'
               : 'flex items-center gap-md px-md py-sm rounded-lg text-on-surface-variant hover:text-primary hover:bg-surface-container transition-colors font-body-sm text-body-sm tracking-wide';
             const inner = (
               <>
                 <Icon name={item.icon} filled={active} />
-                <span>{item.label}</span>
+                <span className="flex-1">{item.label}</span>
+                {hasChildren && <Icon name={expanded ? 'expand_less' : 'expand_more'} className="text-[16px] opacity-50" />}
               </>
             );
-            return item.external ? (
-              <a key={item.href} href={item.href} target="_blank" rel="noopener noreferrer" className={cls}>{inner}</a>
-            ) : (
-              <Link key={item.href} href={item.href} className={cls}>{inner}</Link>
+            return (
+              <div key={item.href}>
+                {item.external ? (
+                  <a href={item.href} target="_blank" rel="noopener noreferrer" className={cls}>{inner}</a>
+                ) : (
+                  <Link href={item.href} className={cls}>{inner}</Link>
+                )}
+                {hasChildren && expanded && (
+                  <div className="ml-md mt-unit space-y-unit border-l border-outline-variant pl-sm">
+                    {item.children!.map(child => {
+                      const childActive = isActive(child.href);
+                      const childCls = childActive
+                        ? 'flex items-center gap-sm px-md py-xs rounded-lg text-primary font-bold bg-surface-container transition-colors font-body-sm text-body-sm'
+                        : 'flex items-center gap-sm px-md py-xs rounded-lg text-on-surface-variant hover:text-primary hover:bg-surface-container transition-colors font-body-sm text-body-sm';
+                      return (
+                        <Link key={child.href} href={child.href} className={childCls}>
+                          <Icon name={child.icon} filled={childActive} className="text-[18px]" />
+                          <span>{child.label}</span>
+                        </Link>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
             );
           })}
           {isAdmin && (
