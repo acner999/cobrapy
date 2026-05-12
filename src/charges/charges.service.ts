@@ -62,6 +62,24 @@ export class ChargesService {
     return charge ? this.serialize(charge) : null;
   }
 
+  async findPublic(id: string) {
+    const charge = await this.prisma.charge.findFirst({
+      where: { id, status: { in: [ChargeStatus.PENDING, ChargeStatus.PROCESSING] } },
+      include: { merchant: { select: { businessName: true } } },
+    });
+    if (!charge) return null;
+    return {
+      id: charge.id,
+      amountGs: Number(charge.amountGs),
+      description: charge.description,
+      status: charge.status,
+      qrImageUrl: charge.qrImageUrl,
+      qrPayload: charge.qrPayload,
+      expiresAt: charge.expiresAt,
+      merchant: charge.merchant,
+    };
+  }
+
   async list(merchantId: string, opts: { limit?: number; status?: ChargeStatus } = {}) {
     const charges = await this.prisma.charge.findMany({
       where: { merchantId, ...(opts.status ? { status: opts.status } : {}) },

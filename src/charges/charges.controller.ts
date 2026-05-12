@@ -1,5 +1,5 @@
 import { Body, Controller, Get, NotFoundException, Param, Post, Query, UseGuards } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiBearerAuth, ApiOkResponse, ApiCreatedResponse, ApiUnauthorizedResponse, ApiNotFoundResponse, ApiQuery } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiBearerAuth, ApiOkResponse, ApiCreatedResponse, ApiUnauthorizedResponse, ApiNotFoundResponse, ApiQuery, ApiExcludeEndpoint } from '@nestjs/swagger';
 import { ChargesService } from './charges.service';
 import { CreateChargeDto } from './dto/create-charge.dto';
 import { ApiKeyGuard } from '../auth/api-key.guard';
@@ -46,6 +46,21 @@ export class ChargesController {
   async findOne(@MerchantId() merchantId: string, @Param('id') id: string) {
     const charge = await this.charges.findOne(merchantId, id);
     if (!charge) throw new NotFoundException(`Charge ${id} not found`);
+    return charge;
+  }
+}
+
+// Endpoint público (sin auth) para la página de pago del cliente final
+@ApiTags('charges')
+@Controller('pay')
+export class PublicChargeController {
+  constructor(private readonly charges: ChargesService) {}
+
+  @Get(':id')
+  @ApiExcludeEndpoint()
+  async getPublic(@Param('id') id: string) {
+    const charge = await this.charges.findPublic(id);
+    if (!charge) throw new NotFoundException('Cobro no encontrado o expirado');
     return charge;
   }
 }

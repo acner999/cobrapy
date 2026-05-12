@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { ChargesService } from '../charges/charges.service';
 import { WhatsAppSender } from './whatsapp.sender';
@@ -10,8 +10,6 @@ const SIP_LIMIT_GS = 10_000_000;
 
 @Injectable()
 export class WhatsAppService {
-  private readonly logger = new Logger('WhatsAppService');
-
   constructor(
     private readonly prisma: PrismaService,
     private readonly charges: ChargesService,
@@ -166,7 +164,7 @@ export class WhatsAppService {
   }
 
   private chargeReply(chargeId: string, amountGs: number, description?: string) {
-    const url = `${PUBLIC_BASE_URL}/p/${chargeId}`;
+    const url = `${PUBLIC_BASE_URL}/pay/${chargeId}`;
     return [
       `✅ *Cobro creado: Gs. ${amountGs.toLocaleString('es-PY')}*`,
       description ? `Concepto: ${description}` : null,
