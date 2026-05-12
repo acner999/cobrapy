@@ -213,7 +213,8 @@ export class SubscriptionsService {
     return { ...p, amountGs: Number(p.amountGs) };
   }
 
-  private serializeSub<T extends { plan?: { amountGs: bigint } | null }>(s: T & { plan?: { amountGs: bigint } | null }) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private serializeSub(s: any) {
     return {
       ...s,
       plan: s.plan ? { ...s.plan, amountGs: Number(s.plan.amountGs) } : undefined,
